@@ -1,8 +1,8 @@
 ---
 layout: post
-date: 2016-01-15 07:59:00-0400
+date: 2025-06-03 09:00:00+1000
 inline: true
 related_posts: false
 ---
 
-A simple inline announcement with Markdown emoji! :sparkles: :smile:
+Paper accepted by the IEEE Journal on Selected Areas in Communications: Distributionally Robust Wireless Semantic Communication with Large AI Models.

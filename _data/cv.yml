@@ -1,189 +1,135 @@
 cv:
-  name: Albert Einstein
-  label: Scientist
-  email: einstein@example.com
-  location: Princeton, NJ
+  name: Zerun Niu
+  label: MPhil Student in Computer Science
+  email: zniu9834@uni.sydney.edu.au
+  location: Sydney, Australia
   image: ""
-  summary: A German-born theoretical physicist, widely ranked among the greatest and most influential scientists of all time
+  summary: MPhil student at The University of Sydney working on federated learning, semantic communication, and efficient AI systems.
 
   social_networks:
-    - network: X
-      username: AlbertEinstein
     - network: GitHub
-      username: example
+      username: zerunniu
     - network: LinkedIn
-      username: example
+      username: zerun-niu-265015300
 
   address:
-    street: 2712 Broadway St
-    city: San Francisco
-    region: California
-    postalCode: CA 94115
-    countryCode: US
+    city: Sydney
+    region: NSW
+    countryCode: AU
 
   sections:
     Education:
-      - institution: University of Zurich
-        location: Zurich, Switzerland
-        url: https://www.uzh.ch/
-        area: Physics
-        studyType: PhD
-        start_date: 1900
-        end_date: 1905
-        score: ""
-        courses: "Theory of Relativity"
+      - institution: The University of Sydney
+        location: Sydney, Australia
+        area: Computer Science
+        studyType: Master of Philosophy
+        start_date: 2025
+        end_date: present
         highlights:
-          - Description 1.
-          - Description 2.
+          - "Supervisor: Nguyen Tran"
+          - "Research focus: Federated Learning, Semantic Communication, and Efficient AI Systems"
 
-      - institution: Eidgenössische Technische Hochschule
-        location: Zurich, Switzerland
-        area: Physics
-        studyType: Federal teaching diploma
-        start_date: 1896
-        end_date: 1900
-        highlights:
-          - Description 1.
-          - Description 2.
+      - institution: The University of Sydney
+        location: Sydney, Australia
+        area: Data Science
+        studyType: Bachelor of Advanced Computing
+        start_date: ""
+        end_date: 2025
+        score: "Final years WAM: 77/100"
+        courses: "Machine Learning, Deep Learning, Natural Language Processing, Distributed Systems"
 
     Experience:
-      - company: Institute for Advanced Study, Princeton University
-        position: Professor of Theoretical Physics
-        location: Princeton University, NJ
-        start_date: 1933
-        end_date: 1955
-        summary: Teaching at Palmer Physical Laboratory (now 302 Frist Campus Center). While not a professor at Princeton, I associated with the physics professors and continued to give lectures on campus.
+      - company: DUAL Group, The University of Sydney
+        position: Research Assistant
+        location: Sydney, Australia
+        start_date: 2024-04
+        end_date: present
+        summary: Research engineering and experimentation for distributed learning and efficient AI systems.
         highlights:
-          - Relativity
-          - Description 2.
-
-      - company: California Institute of Technology
-        position: Visiting Professor
-        location: Pasadena, California, US
-        start_date: 1933
-        end_date: 1933
-        highlights:
-          - Description 1.
-          - Description 2.
-
-      - company: Kaiser Wilhelm Institute for Physics
-        position: Director
-        location: Berlin, Germany
-        start_date: 1917
-        end_date: 1933
-
-      - company: Karl-Ferdinand University
-        position: Professor of Theoretical Physics
-        location: Prague, Czechoslovakia
-        start_date: 1911
-        end_date: 1917
-
-      - company: University of Zurich
-        position: Associate Professor of Theoretical Physics
-        location: Zurich, Switzerland
-        start_date: 1909
-        end_date: 1911
-
-    Volunteer:
-      - company: People's Climate March
-        position: Lead Organizer
-        location: Zurich, Switzerland
-        start_date: 2014-04-01
-        end_date: 2015-07-01
-        summary: Lead organizer for the New York City branch of the People's Climate March, the largest climate march in history.
-        highlights:
-          - "Awarded 'Climate Hero' award by Greenpeace for my efforts organizing the march."
-          - "Men of the year 2014 by Time magazine"
-
-    Awards:
-      - title: Nobel Prize in Physics
-        authors:
-          - "Royal Swedish Academy of Sciences"
-        date: 1921-11-01
-        awarder: Royal Swedish Academy of Sciences
-        url: https://www.nobelprize.org/prizes/physics/1921/einstein/biographical/
-        summary: The Nobel Prizes are five separate prizes that, according to Alfred Nobel's will of 1895, are awarded to 'those who, during the preceding year, have conferred the greatest benefit to humankind.'
-
-      - title: Max Planck Medal
-        authors:
-          - "German Physical Society"
-        date: 2029
-        awarder: German Physical Society
-        summary: Awarded for outstanding scientific achievement
+          - Built reproducible training and evaluation pipelines with configs, seeds, logging, and automated reporting.
+          - Implemented baselines, targeted ablations, and publication-quality figures and tables for paper submissions.
+          - Addressed reviewer feedback through additional experiments and clarity edits with supervisors and co-authors.
+          - Coordinated experiment ownership, timelines, and artifact handoff across code, plots, and tables.
+          - Designed and deployed the official DUAL Group website.
 
     Publications:
-      - title: Zur Elektrodynamik bewegter Körper
+      - title: Distributionally Robust Wireless Semantic Communication with Large AI Models
         authors:
-          - Albert Einstein
-        publisher: Annalen der Physik
-        releaseDate: 1905-06-30
-        url: https://en.wikisource.org/wiki/Translation:On_the_Electrodynamics_of_Moving_Bodies
-        summary: It concerned an interpretation of the Michelson–Morley experiment and the properties of light and time. Special relativity incorporates the principle that the speed of light is the same for all inertial observers regardless of the state of motion of the source.
+          - L. T. Le
+          - S. H. Wanasekara
+          - Z. Niu
+          - et al.
+        publisher: IEEE Journal on Selected Areas in Communications
+        releaseDate: 2025
+        url: https://doi.org/10.48550/arXiv.2506.03167
+        summary: Research on robust semantic communication for large AI model deployment over noisy and bandwidth-constrained wireless channels.
 
-      - title: Über einen die Erzeugung und Verwandlung des Lichtes betreffenden heuristischen Gesichtspunkt
+      - title: Federated Deep Equilibrium Learning over Resource-Constrained Edge Networks
         authors:
-          - Albert Einstein
-        publisher: Annalen der Physik
-        releaseDate: 1905-03-18
-        url: https://de.wikisource.org/wiki/Über_einen_die_Erzeugung_und_Verwandlung_des_Lichtes_betreffenden_heuristischen_Gesichtspunkt
-        summary: In the second paper, he applied the quantum theory to light to explain the photoelectric effect. In particular, he used the idea of light quanta (photons) to explain experimental results, but stressed the importance of the experimental results. The importance of his work on the photoelectric effect earned him the Nobel Prize in Physics in 1921.
-
-      - title: Die Grundlage der allgemeinen Relativitätstheorie
-        authors:
-          - Albert Einstein
-        publisher: Annalen der Physik
-        releaseDate: 1916-03-20
-        url: https://de.wikisource.org/wiki/Die_Grundlage_der_allgemeinen_Relativitätstheorie
-        summary: The publication of the theory of general relativity made him internationally famous. He was professor of physics at the universities of Zurich (1909–1911) and Prague (1911–1912), before he returned to ETH Zurich (1912–1914).
-
-    Skills:
-      - name: Physics
-        level: Master
-        icon: fa-solid fa-hashtag
-        keywords: "Quantum Mechanics, Quantum Computing, Quantum Information, Quantum Cryptography, Quantum Communication, Quantum Teleportation"
-
-    Languages:
-      - name: German
-        summary: "Native speaker"
-
-      - name: English
-        summary: "Fluent"
-
-    Interests:
-      - name: Physics
-        icon: fa-solid fa-tag
-        keywords: "Quantum Mechanics, Quantum Computing, Quantum Information, Quantum Cryptography, Quantum Communication, Quantum Teleportation"
-
-    Certificates:
-      - name: Machine Learning
-        date: 2018-01-01
-        issuer: Stanford University
-        icon: fa-solid fa-location-dot
-
-      - name: Quantum Computing
-        date: 2018-01-01
-        issuer: Stanford University
-        icon: fa-solid fa-tag
-
-      - name: Quantum Information
-        date: 2018-01-01
-        issuer: Stanford University
-        icon: fa-solid fa-envelope
+          - L. T. Le
+          - Z. Niu
+          - T. D. Nguyen
+          - et al.
+        publisher: Submitted to IEEE Internet of Things Journal
+        releaseDate: 2025
+        summary: Federated deep equilibrium learning for heterogeneous clients and constrained edge environments.
 
     Projects:
-      - name: Quantum Computing
-        summary: Quantum computing is the use of quantum-mechanical phenomena such as superposition and entanglement to perform computation. Computers that perform quantum computations are known as quantum computers.
+      - name: Adaptive Low-Rank Optimization for Federated Learning
+        summary: Undergraduate thesis integrating DyLoRA into a federated learning pipeline.
         highlights:
-          - Quantum Teleportation
-          - Quantum Cryptography
-        start_date: 2018-01-01
-        end_date: 2018-01-01
+          - Reduced communication cost by 80% without loss of accuracy.
+          - Improved training stability across clients with reproducible PyTorch experiments.
+          - "Result: 85/100, High Distinction."
+        start_date: 2025
+        end_date: 2025
 
-    References:
-      - name: Professor John Doe
-        icon: fa-solid fa-laptop
-        reference: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam condimentum, diam quis convallis euismod, arcu mi ullamcorper lorem, a vestibulum nunc magna at sem. Sed in risus ac felis varius blandit.
+      - name: DUAL Group Website
+        summary: Designed and deployed the official website for the Distributed compUting, optimizAtion, and Learning group.
+        highlights:
+          - Introduced group members, publications, and research projects.
+          - "Website: https://dual-grp.github.io/website-dual/"
+        start_date: 2024
+        end_date: 2025
 
-      - name: Professor Jane Smith
-        icon: fa-solid fa-thumbtack
-        reference: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam condimentum, diam quis convallis euismod, arcu mi ullamcorper lorem, a vestibulum nunc magna at sem. Sed in risus ac felis varius blandit.
+    Teaching Readiness:
+      - name: Computer Science and Data Science Teaching Support
+        summary: Prepared to support labs, tutorials, code reviews, and project assessment.
+        highlights:
+          - "Subjects: Algorithms and Data Structures, Computer Systems, Machine Learning, Deep Learning, NLP, Data Science Foundations, Distributed Systems."
+          - "Assessment: assignments, coding practicals, project reports, oral demos, rubric-aligned marking."
+          - "Student support: consultations, Ed discussion, code reviews, debugging practices, academic integrity and citation support."
+
+    Skills:
+      - name: GenAI and Multimodal
+        level: Advanced
+        icon: fa-solid fa-hashtag
+        keywords: "LLM/VLM orchestration, agents, tool use, multimodal adapters, LoRA, alignment, safety guardrails, jailbreak defense, RAG, evaluation"
+
+      - name: Efficient Tuning
+        level: Advanced
+        icon: fa-solid fa-hashtag
+        keywords: "LoRA, DyLoRA, PEFT workflows, quantization, distillation"
+
+      - name: ML Engineering
+        level: Advanced
+        icon: fa-solid fa-hashtag
+        keywords: "PyTorch, Hugging Face Transformers, PEFT, scikit-learn, reproducible training pipelines, experiment tracking"
+
+      - name: Distributed and Data Systems
+        level: Advanced
+        icon: fa-solid fa-hashtag
+        keywords: "Ray, Dask, Databricks, Spark, Hadoop, Airflow, FastAPI, tracing, observability"
+
+      - name: Programming
+        level: Advanced
+        icon: fa-solid fa-hashtag
+        keywords: "Python, SQL, Java, C/C++, Git/GitHub, Linux, Jupyter, API development"
+
+    Awards:
+      - title: Undergraduate Thesis High Distinction
+        authors:
+          - The University of Sydney
+        date: 2025
+        awarder: The University of Sydney
+        summary: Adaptive Low-Rank Optimization for Federated Learning, score 85/100.

@@ -2,16 +2,16 @@
 layout: about
 title: about
 permalink: /
-subtitle: <a href='#'>Affiliations</a>. Address. Contacts. Motto. Etc.
+subtitle: MPhil Student in Computer Science, The University of Sydney
 
 profile:
   align: right
   image: prof_pic.jpg
   image_circular: false # crops the image to make it circular
   more_info: >
-    <p>555 your office number</p>
-    <p>123 your address street</p>
-    <p>Your City, State 12345</p>
+    <p>School of Computer Science</p>
+    <p>The University of Sydney</p>
+    <p>Sydney, Australia</p>
 
 selected_papers: true # includes a list of papers marked as "selected={true}"
 social: true # includes social icons at the bottom of the page
@@ -27,8 +27,10 @@ latest_posts:
   limit: 3 # leave blank to include all the blog posts
 ---
 
-Write your biography here. Tell the world about yourself. Link to your favorite [subreddit](https://www.reddit.com). You can put a picture in, too. The code is already in, just name your picture `prof_pic.jpg` and put it in the `img/` folder.
+I am an MPhil student in Computer Science at The University of Sydney, supervised by Nguyen Tran. My research focuses on federated learning, semantic communication, and efficient AI systems, with interests in distributed optimization, edge intelligence, and large AI model deployment over constrained networks.
 
-Put your address / P.O. box / other info right below your picture. You can also disable any of these elements by editing `profile` property of the YAML header of your `_pages/about.md`. Edit `_bibliography/papers.bib` and Jekyll will render your [publications page](/al-folio/publications/) automatically.
+Before starting my MPhil, I completed a Bachelor of Advanced Computing with a major in Data Science at The University of Sydney. I am also a research assistant in the DUAL Group, where I build reproducible training and evaluation pipelines for distributed learning experiments, support paper submissions and revisions, and help maintain research artifacts.
 
-Link to your social media connections, too. This theme is set up to use [Font Awesome icons](https://fontawesome.com/) and [Academicons](https://jpswalsh.github.io/academicons/), like the ones below. Add your Facebook, Twitter, LinkedIn, Google Scholar, or just disable all of them.
+My current work spans distributionally robust wireless semantic communication, federated deep equilibrium learning over edge networks, and adaptive low-rank optimization for communication-efficient federated learning.
+
+**Research interests:** federated learning, semantic communication, efficient AI systems, distributed learning, parameter-efficient tuning, and ML systems for resource-constrained environments.

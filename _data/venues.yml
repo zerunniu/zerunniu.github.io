@@ -1,9 +1,7 @@
-"AJP":
-  url: https://aapt.scitation.org/journal/ajp
-  color: "#00369f"
+"JSAC":
+  url: https://www.comsoc.org/publications/journals/ieee-jsac
+  color: "#00629b"
 
-"PhysRev":
-  url: https://journals.aps.org/
-
-"Vision":
-  color: "#009f36"
+"IoTJ":
+  url: https://ieee-iotj.org/
+  color: "#2c7a7b"
