@@ -6,7 +6,7 @@ subtitle: MPhil Student in Computer Science, The University of Sydney
 
 profile:
   align: right
-  image: prof_pic.jpg
+  image: profile/zerun.jpg
   image_circular: false # crops the image to make it circular
   more_info: >
     <p>School of Computer Science</p>
