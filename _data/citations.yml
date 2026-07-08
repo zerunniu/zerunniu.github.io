@@ -1,5 +1,7 @@
 metadata:
-  last_updated: "2026-06-26"
-  deploy_trigger: "repo-renamed"
-# Citation counts can be populated later with the update-citations workflow.
-papers: {}
+  last_updated: '2026-07-08'
+papers:
+  2dTScwcAAAAJ:u5HHmVD_uO8C:
+    citations: 4
+    title: Distributionally robust wireless semantic communication with large AI models
+    year: '2026'
