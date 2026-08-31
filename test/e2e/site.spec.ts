@@ -80,6 +80,16 @@ test("desktop 3D lab loads only after explicit activation", async ({
   page,
 }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop");
+  // GitHub-hosted runners may report only two CPU cores even though Chromium
+  // can render the software WebGL path. Model a capable desktop explicitly so
+  // this test exercises the opt-in 3D branch instead of the intended 2D
+  // low-performance fallback.
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "hardwareConcurrency", {
+      configurable: true,
+      get: () => 8,
+    });
+  });
   await page.goto("/");
   const launch = page.getByRole("button", { name: "Launch 3D lab" });
   await expect(launch).toBeVisible();
