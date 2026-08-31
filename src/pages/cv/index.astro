@@ -1,0 +1,225 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+const [profileEntry] = await getCollection("profile");
+const profile = profileEntry.data;
+const experience = (await getCollection("experience")).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+const publications = (await getCollection("publications")).sort(
+  (a, b) => b.data.year - a.data.year,
+);
+const projects = (await getCollection("projects"))
+  .filter((project) => project.data.featured)
+  .sort((a, b) => a.data.order - b.data.order);
+---
+
+<BaseLayout
+  title="CV"
+  description="Web CV and downloadable Research Engineer resume and Academic CV for Zerun Niu."
+>
+  <section class="page-shell cv-shell" data-pagefind-body>
+    <header class="cv-head">
+      <div>
+        <span class="eyebrow">Curriculum vitae</span><h1>
+          Research depth, <span class="gradient-text">engineering range.</span>
+        </h1><p class="lede">{profile.summary}</p>
+      </div>
+      <aside>
+        <img src="/assets/zerun-niu.jpg" alt="Zerun Niu" />
+        <div class="button-row">
+          <a
+            class="button-primary"
+            href="/assets/Zerun_Niu_Research_Engineer_Resume.pdf"
+            >Industry resume · PDF</a
+          ><a class="button-secondary" href="/assets/Zerun_Niu_Academic_CV.pdf"
+            >Academic CV · PDF</a
+          >
+        </div>
+        <small
+          >Both PDFs are generated from this site's Markdown content during
+          deployment.</small
+        >
+      </aside>
+    </header>
+    <section class="cv-section">
+      <div class="cv-label">Experience + education</div><div class="cv-list">
+        {
+          experience.map((entry) => (
+            <article>
+              <>
+                <span>
+                  {entry.data.start} — {entry.data.end}
+                </span>
+                <div>
+                  <>
+                    <h2>{entry.data.role}</h2>
+                    <h3>{entry.data.organisation}</h3>
+                    <p>{entry.data.summary}</p>
+                  </>
+                </div>
+              </>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+    <section class="cv-section">
+      <div class="cv-label">Selected research</div><div class="cv-list">
+        {
+          projects.map((project) => (
+            <article>
+              <>
+                <span>{project.data.period}</span>
+                <div>
+                  <>
+                    <h2>{project.data.shortTitle}</h2>
+                    <h3>{project.data.status.replace("-", " ")}</h3>
+                    <p>{project.data.role}</p>
+                  </>
+                </div>
+              </>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+    <section class="cv-section">
+      <div class="cv-label">Publications</div><div class="cv-list">
+        {
+          publications.map((paper) => (
+            <article>
+              <>
+                <span>{paper.data.year}</span>
+                <div>
+                  <>
+                    <h2>{paper.data.title}</h2>
+                    <h3>
+                      {paper.data.venue} · {paper.data.status.replace("-", " ")}
+                    </h3>
+                    <p>{paper.data.authors.join(", ")}</p>
+                  </>
+                </div>
+              </>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+    <section class="cv-section">
+      <div class="cv-label">Technical practice</div><div class="skill-groups">
+        {
+          profile.skillGroups.map((group) => (
+            <article>
+              <>
+                <h2>{group.category}</h2>
+                <p>{group.skills.join(" · ")}</p>
+              </>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+  </section>
+</BaseLayout>
+<style>
+  .cv-head {
+    display: grid;
+    grid-template-columns: 1fr minmax(20rem, 0.4fr);
+    gap: 3rem;
+    align-items: end;
+  }
+  .cv-head aside {
+    padding: 1.3rem;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: var(--panel);
+  }
+  .cv-head aside img {
+    width: 5rem;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-bottom: 1rem;
+  }
+  .cv-head aside .button-row {
+    display: grid;
+  }
+  .cv-head aside small {
+    display: block;
+    margin-top: 0.8rem;
+    color: var(--muted);
+    font:
+      0.62rem/1.5 "Geist Mono Variable",
+      monospace;
+  }
+  .cv-section {
+    display: grid;
+    grid-template-columns: 13rem 1fr;
+    gap: 2rem;
+    margin-top: 5rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--line);
+  }
+  .cv-label {
+    color: var(--cyan);
+    font:
+      0.65rem/1.4 "Geist Mono Variable",
+      monospace;
+    text-transform: uppercase;
+  }
+  .cv-list article {
+    display: grid;
+    grid-template-columns: 8rem 1fr;
+    gap: 1rem;
+    padding: 0 0 1.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .cv-list article > span {
+    color: var(--muted);
+    font:
+      0.63rem/1.4 "Geist Mono Variable",
+      monospace;
+  }
+  .cv-list h2,
+  .skill-groups h2 {
+    margin: 0 0 0.35rem;
+    font-size: 1.15rem;
+    letter-spacing: -0.02em;
+  }
+  .cv-list h3 {
+    color: var(--cyan);
+    font:
+      0.63rem/1.4 "Geist Mono Variable",
+      monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .cv-list p,
+  .skill-groups p {
+    color: var(--muted);
+    font-size: 0.82rem;
+  }
+  .skill-groups {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+  .skill-groups article {
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--line);
+  }
+  @media (max-width: 850px) {
+    .cv-head,
+    .cv-section {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 560px) {
+    .cv-list article,
+    .skill-groups {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

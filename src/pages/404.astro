@@ -1,0 +1,26 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Signal lost">
+  <section class="page-shell lost">
+    <span class="eyebrow">404 · coordinate unavailable</span><h1>
+      Signal <span class="gradient-text">lost.</span>
+    </h1><p class="lede">That route is outside this research lab’s map.</p><div
+      class="button-row"
+    >
+      <a class="button-primary" href="/">Return to the lab</a><a
+        class="button-secondary"
+        href="/projects">Open research archive</a
+      >
+    </div>
+  </section>
+</BaseLayout>
+<style>
+  .lost {
+    min-height: 68vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+</style>

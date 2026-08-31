@@ -1,0 +1,116 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+const notes = (await getCollection("notes", ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+---
+
+<BaseLayout
+  title="Research notes"
+  description="Research notes by Zerun Niu on reliable AI, semantic communication, federated learning, and ML systems."
+>
+  <section class="page-shell">
+    <span class="eyebrow">Research log</span>
+    <div class="page-intro">
+      <h1>Working ideas, <span class="gradient-text">made legible.</span></h1><p
+        class="lede"
+      >
+        Short notes connecting algorithms, experiments, and the constraints that
+        shape deployed AI systems.
+      </p>
+    </div>
+    <div class="notes-grid">
+      {
+        notes.map((note, index) => (
+          <article data-pagefind-body>
+            <span>
+              Log {String(index + 1).padStart(2, "0")} ·{" "}
+              {note.data.date.toLocaleDateString("en-AU", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              })}
+            </span>
+            <h2>
+              <a href={`/notes/${note.id}`}>{note.data.title}</a>
+            </h2>
+            <p>{note.data.summary}</p>
+            <footer>
+              <>
+                <span>{note.data.tags.join(" · ")}</span>
+                <a href={`/notes/${note.id}`}>Read note →</a>
+              </>
+            </footer>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+</BaseLayout>
+<style>
+  .page-intro {
+    display: grid;
+    grid-template-columns: 1.1fr 0.55fr;
+    gap: 2rem;
+    align-items: end;
+  }
+  .notes-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-top: 3rem;
+  }
+  .notes-grid article {
+    position: relative;
+    min-height: 24rem;
+    padding: 1.5rem;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--panel);
+    display: flex;
+    flex-direction: column;
+  }
+  .notes-grid article > span {
+    color: var(--cyan);
+    font:
+      0.62rem/1.4 "Geist Mono Variable",
+      monospace;
+    text-transform: uppercase;
+  }
+  .notes-grid h2 {
+    margin: 4rem 0 1rem;
+    font-size: clamp(1.55rem, 3vw, 2.6rem);
+  }
+  .notes-grid h2 a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+  }
+  .notes-grid p {
+    color: var(--muted);
+  }
+  .notes-grid footer {
+    margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font:
+      0.62rem/1.4 "Geist Mono Variable",
+      monospace;
+  }
+  .notes-grid footer a {
+    position: relative;
+    z-index: 1;
+    color: var(--cyan);
+  }
+  @media (max-width: 760px) {
+    .page-intro,
+    .notes-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

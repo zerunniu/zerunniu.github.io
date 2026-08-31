@@ -1,0 +1,184 @@
+---
+const commands = [
+  { label: "Open research lab", detail: "Home", path: "/" },
+  { label: "Explore all projects", detail: "Research", path: "/projects" },
+  { label: "Open BRAVE", detail: "First-author work", path: "/projects/brave" },
+  { label: "Open WaSeCom", detail: "JSAC 2026", path: "/projects/wasecom" },
+  {
+    label: "Open FeDEQ",
+    detail: "Federated learning",
+    path: "/projects/fedeq",
+  },
+  { label: "View publications", detail: "Papers", path: "/publications" },
+  {
+    label: "View experience",
+    detail: "USyd · UNSW · DUAL",
+    path: "/experience",
+  },
+  { label: "Read research notes", detail: "Writing", path: "/notes" },
+  { label: "Open CV", detail: "Web and PDF", path: "/cv" },
+  { label: "Ask Digital Zerun", detail: "AI clone", path: "/#digital-zerun" },
+];
+---
+
+<div class="command-backdrop" data-command-backdrop role="presentation" hidden>
+  <section
+    class="command-panel"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Site navigation"
+  >
+    <label>
+      <span class="sr-only">Search pages</span>
+      <input
+        data-command-input
+        type="search"
+        autocomplete="off"
+        placeholder="Search research, papers, or pages…"
+      />
+    </label>
+    <div class="command-results" data-command-results>
+      {
+        commands.map((item) => (
+          <a
+            href={item.path}
+            data-command-item
+            data-search={`${item.label} ${item.detail}`.toLowerCase()}
+          >
+            <>
+              <span>{item.label}</span>
+              <small>{item.detail}</small>
+            </>
+          </a>
+        ))
+      }
+      <p data-command-empty hidden>No matching route. Try “BRAVE” or “CV”.</p>
+      <div class="search-divider" data-search-divider hidden>
+        Full-text results
+      </div>
+      <div data-pagefind-results></div>
+    </div>
+    <footer>
+      <span>type to filter</span><span>↵ open</span><span>esc close</span>
+    </footer>
+  </section>
+</div>
+
+<script is:inline>
+  (() => {
+    const backdrop = document.querySelector("[data-command-backdrop]");
+    const panel = backdrop?.querySelector(".command-panel");
+    const input = backdrop?.querySelector("[data-command-input]");
+    const items = [
+      ...(backdrop?.querySelectorAll("[data-command-item]") ?? []),
+    ];
+    const empty = backdrop?.querySelector("[data-command-empty]");
+    const divider = backdrop?.querySelector("[data-search-divider]");
+    const pagefindResults = backdrop?.querySelector("[data-pagefind-results]");
+    const trigger = document.querySelector("[data-command-trigger]");
+    if (
+      !(backdrop instanceof HTMLElement) ||
+      !(panel instanceof HTMLElement) ||
+      !(input instanceof HTMLInputElement) ||
+      !(pagefindResults instanceof HTMLElement)
+    )
+      return;
+
+    let searchTimer;
+    let searchRevision = 0;
+
+    const clearFullText = () => {
+      pagefindResults.replaceChildren();
+      if (divider instanceof HTMLElement) divider.hidden = true;
+    };
+
+    const close = () => {
+      backdrop.hidden = true;
+      document.body.style.removeProperty("overflow");
+      input.value = "";
+      items.forEach((item) => item.removeAttribute("hidden"));
+      if (empty instanceof HTMLElement) empty.hidden = true;
+      clearFullText();
+      if (trigger instanceof HTMLElement) trigger.focus();
+    };
+
+    const open = () => {
+      backdrop.hidden = false;
+      document.body.style.overflow = "hidden";
+      requestAnimationFrame(() => input.focus());
+    };
+
+    const addFullTextResult = (result) => {
+      const link = document.createElement("a");
+      link.href = result.url;
+      const copy = document.createElement("span");
+      copy.textContent = result.meta?.title || result.url;
+      const excerpt = document.createElement("small");
+      excerpt.textContent = String(result.excerpt || "").replace(
+        /<[^>]+>/g,
+        "",
+      );
+      copy.append(excerpt);
+      const source = document.createElement("small");
+      source.textContent = "Pagefind";
+      link.append(copy, source);
+      pagefindResults.append(link);
+    };
+
+    const searchFullText = async (query, revision) => {
+      try {
+        const pagefind = await import("/pagefind/pagefind.js");
+        await pagefind.init();
+        const response = await pagefind.search(query);
+        const resolved = await Promise.all(
+          response.results.slice(0, 5).map((result) => result.data()),
+        );
+        if (revision !== searchRevision) return;
+        clearFullText();
+        resolved.forEach(addFullTextResult);
+        if (divider instanceof HTMLElement)
+          divider.hidden = resolved.length === 0;
+      } catch {
+        if (revision === searchRevision) clearFullText();
+      }
+    };
+
+    input.addEventListener("input", () => {
+      const query = input.value.trim().toLowerCase();
+      let visible = 0;
+      items.forEach((item) => {
+        const matches =
+          !query || (item.getAttribute("data-search") || "").includes(query);
+        item.toggleAttribute("hidden", !matches);
+        if (matches) visible += 1;
+      });
+      if (empty instanceof HTMLElement) empty.hidden = visible > 0;
+      clearTimeout(searchTimer);
+      searchRevision += 1;
+      clearFullText();
+      if (query.length >= 2) {
+        const revision = searchRevision;
+        searchTimer = setTimeout(() => searchFullText(query, revision), 140);
+      }
+    });
+
+    trigger?.addEventListener("click", open);
+    backdrop.addEventListener("mousedown", (event) => {
+      if (event.target === backdrop) close();
+    });
+    panel.addEventListener("mousedown", (event) => event.stopPropagation());
+    window.addEventListener("keydown", (event) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        backdrop.hidden ? open() : close();
+      } else if (event.key === "Escape" && !backdrop.hidden) {
+        close();
+      } else if (event.key === "Enter" && !backdrop.hidden) {
+        const first = backdrop.querySelector(
+          "[data-command-item]:not([hidden]), [data-pagefind-results] a",
+        );
+        if (first instanceof HTMLAnchorElement) first.click();
+      }
+    });
+  })();
+</script>

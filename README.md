@@ -1,24 +1,24 @@
-# Zerun Niu Personal Website
+# Zerun Niu — Immersive AI Research Lab
 
-This repository contains the source for Zerun Niu's academic personal website, deployed with GitHub Pages at:
+The source for [zerunniu.github.io](https://zerunniu.github.io): an Astro, React, and Three.js research portfolio designed for AI Research Engineer and ML Engineer roles.
 
-https://zerunniu.github.io/
-
-The site is built with Jekyll and the al-folio theme. It includes research projects, publications, CV content, teaching interests, and research notes.
-
-## Local Preview
+## Local development
 
 ```bash
-docker compose pull
-docker compose up
+pnpm install
+pnpm dev
 ```
 
-Then open:
+Daily content updates live in `src/content/` as Markdown with schema-validated frontmatter. `pnpm build` regenerates both CV PDFs from the same content, builds the static Astro site, and creates a Pagefind search index.
 
-```text
-http://localhost:8080
+## Verification
+
+```bash
+pnpm check
+pnpm test
+pnpm build
+node scripts/verify_build.mjs
+pnpm test:e2e
 ```
 
-## Deployment
-
-Pushes to the `main` branch trigger the `Deploy site` GitHub Actions workflow. The generated site is published from the `gh-pages` branch.
+The voice agent is optional and fails closed to static research search. Its API key belongs only in Cloudflare Worker secrets. See [docs/deployment.md](docs/deployment.md) and [docs/elevenlabs-agent.md](docs/elevenlabs-agent.md).

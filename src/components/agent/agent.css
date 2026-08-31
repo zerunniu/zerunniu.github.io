@@ -1,0 +1,266 @@
+.agent-console {
+  display: grid;
+  grid-template-columns: 0.72fr 1.25fr 0.55fr;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  overflow: hidden;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+.agent-identity,
+.agent-terminal,
+.agent-console aside {
+  padding: clamp(1.25rem, 3vw, 2rem);
+}
+.agent-identity {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 34rem;
+  border-right: 1px solid var(--line);
+}
+.agent-orb {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 8rem;
+  aspect-ratio: 1;
+  border: 1px solid var(--cyan);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 38% 32%,
+    white,
+    var(--cyan) 7%,
+    var(--indigo) 42%,
+    transparent 72%
+  );
+  box-shadow: 0 0 60px color-mix(in srgb, var(--cyan) 22%, transparent);
+}
+.agent-orb::after {
+  content: "";
+  position: absolute;
+  inset: -15%;
+  border: 1px solid color-mix(in srgb, var(--cyan) 42%, transparent);
+  border-radius: 50%;
+  transform: rotateX(68deg);
+}
+.agent-orb span {
+  color: #071018;
+  font:
+    650 0.8rem/1 "Geist Mono Variable",
+    monospace;
+}
+.agent-orb.mode-speaking {
+  animation: agent-talk 0.7s ease-in-out infinite alternate;
+  filter: hue-rotate(135deg);
+}
+@keyframes agent-talk {
+  to {
+    transform: scale(1.06);
+  }
+}
+.agent-kicker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-bottom: 0.8rem;
+  color: var(--cyan);
+  font:
+    0.6rem/1.4 "Geist Mono Variable",
+    monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.agent-kicker span:first-child {
+  color: var(--bg);
+  background: var(--orange);
+  padding: 0.18rem 0.35rem;
+}
+.agent-identity h2 {
+  margin-bottom: 1rem;
+  font-size: clamp(2rem, 4vw, 3.5rem);
+}
+.agent-identity p {
+  color: var(--muted);
+}
+.agent-terminal {
+  min-width: 0;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+}
+.terminal-bar {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.6rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  font:
+    0.58rem/1.4 "Geist Mono Variable",
+    monospace;
+  text-transform: uppercase;
+}
+.mode-switch {
+  display: inline-flex;
+  margin: 1rem 0;
+  padding: 0.2rem;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+}
+.mode-switch button {
+  border: 0;
+  border-radius: 7px;
+  padding: 0.45rem 0.8rem;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+.mode-switch button.is-active {
+  background: color-mix(in srgb, var(--cyan) 12%, transparent);
+  color: var(--cyan);
+}
+.transcript {
+  min-height: 14.5rem;
+  max-height: 19rem;
+  overflow: auto;
+  padding: 0.4rem 0;
+}
+.transcript p {
+  margin-bottom: 0.9rem;
+  color: var(--muted);
+}
+.transcript p span {
+  display: block;
+  margin-bottom: 0.2rem;
+  color: var(--cyan);
+  font:
+    0.58rem/1.4 "Geist Mono Variable",
+    monospace;
+  text-transform: uppercase;
+}
+.transcript p.user {
+  padding-left: 1.5rem;
+  color: var(--text);
+}
+.starter-prompts {
+  display: grid;
+  gap: 0.55rem;
+}
+.starter-prompts button {
+  padding: 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: transparent;
+  color: var(--muted);
+  text-align: left;
+  cursor: pointer;
+}
+.starter-prompts button:hover {
+  border-color: var(--line-strong);
+  color: var(--text);
+}
+.consent {
+  display: flex;
+  gap: 0.55rem;
+  margin: 0.6rem 0;
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+.agent-input {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+.agent-input input {
+  min-width: 12rem;
+  flex: 1;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--panel-solid);
+  color: var(--text);
+  padding: 0.75rem;
+}
+.agent-input button {
+  border: 1px solid var(--line-strong);
+  border-radius: 9px;
+  padding: 0 0.85rem;
+  background: color-mix(in srgb, var(--cyan) 12%, transparent);
+  color: var(--cyan);
+  cursor: pointer;
+}
+.agent-input .end {
+  border-color: color-mix(in srgb, var(--danger) 50%, transparent);
+  color: var(--danger);
+  background: transparent;
+}
+.agent-input button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.agent-fallback {
+  margin: 0.8rem 0 0;
+  color: var(--muted);
+  font:
+    0.62rem/1.5 "Geist Mono Variable",
+    monospace;
+}
+.turnstile-host {
+  min-height: 1px;
+}
+.agent-console aside {
+  border-left: 1px solid var(--line);
+}
+.agent-console aside > span {
+  color: var(--orange);
+  font:
+    0.62rem/1.4 "Geist Mono Variable",
+    monospace;
+  text-transform: uppercase;
+}
+.agent-console aside ul {
+  padding-left: 1rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+.agent-console aside li {
+  margin-bottom: 0.7rem;
+}
+.agent-console aside a {
+  color: var(--cyan);
+  font-size: 0.72rem;
+}
+.agent-highlight {
+  box-shadow:
+    0 0 0 2px var(--orange),
+    0 0 40px color-mix(in srgb, var(--orange) 25%, transparent) !important;
+}
+@media (max-width: 1000px) {
+  .agent-console {
+    grid-template-columns: 0.75fr 1.25fr;
+  }
+  .agent-console aside {
+    grid-column: 1 / -1;
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+}
+@media (max-width: 720px) {
+  .agent-console {
+    grid-template-columns: 1fr;
+  }
+  .agent-identity {
+    min-height: auto;
+    gap: 2.5rem;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .agent-console aside {
+    grid-column: auto;
+  }
+  .terminal-bar {
+    grid-template-columns: auto 1fr;
+  }
+  .terminal-bar span:last-child {
+    display: none;
+  }
+}

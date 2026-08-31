@@ -1,0 +1,168 @@
+---
+import "@fontsource-variable/geist";
+import "@fontsource-variable/geist-mono";
+import "../styles/global.css";
+import CommandPaletteShell from "../components/CommandPaletteShell.astro";
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  structuredData?: Record<string, unknown> | Record<string, unknown>[];
+}
+
+const {
+  title = "Zerun Niu — AI Researcher & ML Systems Engineer",
+  description = "Zerun Niu builds reliable, efficient AI systems across federated learning, semantic communication, and trustworthy machine learning.",
+  image = "/assets/og-zerun-lab.png",
+  structuredData,
+} = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const pageTitle = title.startsWith("Zerun") ? title : `${title} — Zerun Niu`;
+const nav = [
+  ["Research", "/projects"],
+  ["Publications", "/publications"],
+  ["Experience", "/experience"],
+  ["Notes", "/notes"],
+  ["CV", "/cv"],
+];
+---
+
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="theme-color" content="#080b12" />
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="Zerun Niu research notes"
+      href="/rss.xml"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL(image, Astro.site)} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={new URL(image, Astro.site)} />
+    <title>{pageTitle}</title>
+    {
+      structuredData && (
+        <script
+          is:inline
+          type="application/ld+json"
+          set:html={JSON.stringify(structuredData)}
+        />
+      )
+    }
+    <script is:inline>
+      const savedTheme = localStorage.getItem("zerun-theme");
+      const preferred = matchMedia("(prefers-color-scheme: light)").matches
+        ? "light"
+        : "dark";
+      document.documentElement.dataset.theme = savedTheme || preferred;
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <div class="site-grid" aria-hidden="true"></div>
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="Zerun Niu home">
+        <span class="brand-mark" aria-hidden="true">ZN</span>
+        <span>
+          <strong>Zerun Niu</strong>
+          <small>AI research systems</small>
+        </span>
+      </a>
+      <nav aria-label="Primary navigation">
+        {
+          nav.map(([label, href]) => (
+            <a
+              href={href}
+              aria-current={
+                Astro.url.pathname.startsWith(href) ? "page" : undefined
+              }
+            >
+              {label}
+            </a>
+          ))
+        }
+      </nav>
+      <div class="header-actions">
+        <button
+          class="command-trigger"
+          type="button"
+          data-command-trigger
+          aria-label="Open command menu"
+        >
+          <span>Navigate</span><kbd>⌘ K</kbd>
+        </button>
+        <button
+          class="icon-button"
+          type="button"
+          data-theme-toggle
+          aria-label="Switch to light theme"
+        >
+          <span aria-hidden="true">◐</span>
+        </button>
+      </div>
+    </header>
+    <main id="main-content">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div>
+        <span class="eyebrow">Signal remains open</span>
+        <p>Building reliable AI systems from Sydney.</p>
+      </div>
+      <div class="footer-links">
+        <a href="mailto:zerun.niu@sydney.edu.au">Email</a>
+        <a href="https://www.linkedin.com/in/zerun-niu-265015300">LinkedIn</a>
+        <a href="https://github.com/zerunniu">GitHub</a>
+        <a href="/privacy">Privacy</a>
+      </div>
+      <small
+        >© {new Date().getFullYear()} Zerun Niu. No tracking, no behavioural analytics.</small
+      >
+    </footer>
+    <CommandPaletteShell />
+    <script is:inline>
+      (() => {
+        const button = document.querySelector("[data-theme-toggle]");
+        if (!(button instanceof HTMLButtonElement)) return;
+
+        const render = () => {
+          const current =
+            document.documentElement.dataset.theme === "light"
+              ? "light"
+              : "dark";
+          button.setAttribute(
+            "aria-label",
+            `Switch to ${current === "dark" ? "light" : "dark"} theme`,
+          );
+          const icon = button.querySelector("span");
+          if (icon) icon.textContent = current === "dark" ? "◐" : "◑";
+        };
+
+        button.addEventListener("click", () => {
+          const next =
+            document.documentElement.dataset.theme === "dark"
+              ? "light"
+              : "dark";
+          document.documentElement.dataset.theme = next;
+          localStorage.setItem("zerun-theme", next);
+          render();
+        });
+        render();
+      })();
+    </script>
+  </body>
+</html>

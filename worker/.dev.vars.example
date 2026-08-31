@@ -1,0 +1,4 @@
+ELEVENLABS_API_KEY=replace_me
+ELEVENLABS_AGENT_ID=agent_replace_me
+TURNSTILE_SECRET_KEY=replace_me
+IP_HASH_SALT=generate_a_random_32_byte_value

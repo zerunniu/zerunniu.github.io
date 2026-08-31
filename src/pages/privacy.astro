@@ -1,0 +1,119 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Voice and privacy"
+  description="Privacy policy for Digital Zerun, microphone access, voice cloning, retention, and rate limiting."
+>
+  <article class="page-shell privacy-page" data-pagefind-body>
+    <span class="eyebrow">Privacy protocol</span>
+    <header>
+      <h1>
+        A voice clone, <span class="gradient-text">with clear boundaries.</span>
+      </h1><p class="lede">
+        Digital Zerun is an AI representation, not Zerun speaking live. Voice
+        mode is optional; the rest of this website works without it.
+      </p>
+    </header>
+    <div class="privacy-grid">
+      <nav aria-label="Policy sections">
+        <a href="#identity">AI identity</a><a href="#microphone">Microphone</a
+        ><a href="#retention">Retention</a><a href="#limits">Abuse prevention</a
+        ><a href="#scope">Knowledge scope</a>
+      </nav>
+      <div class="prose">
+        <section id="identity">
+          <h2>AI identity and cloned voice</h2><p>
+            The agent introduces itself as “Digital Zerun, an AI representation
+            using Zerun’s authorised cloned voice.” The voice is created only
+            after Zerun completes ElevenLabs voice authorisation. The public
+            repository contains neither the recording nor the private Voice ID.
+          </p>
+        </section>
+        <section id="microphone">
+          <h2>Microphone access</h2><p>
+            Microphone permission is requested only after a visitor selects
+            Voice, accepts the on-screen disclosure, and starts a session. Text
+            mode and all research pages work without microphone access.
+          </p>
+        </section>
+        <section id="retention">
+          <h2>Zero-retention operating target</h2><p>
+            The production agent is configured for ElevenLabs Zero Retention
+            Mode, Audio Saving off, and conversation retention of 0 days. This
+            site does not store audio, transcripts, or questions. The visible
+            transcript is held only in page memory and cleared when a session
+            ends or the page closes.
+          </p>
+        </section>
+        <section id="limits">
+          <h2>Minimal abuse-prevention data</h2><p>
+            The Cloudflare Worker checks the page Origin and Turnstile result.
+            For rate limiting, it converts the visitor IP into a short-lived
+            salted hash and stores only counters with a 10-minute TTL. Raw IP
+            addresses are not stored by the application. The limit is three
+            session starts per 10 minutes, a maximum five-minute session, plus a
+            global daily cap.
+          </p>
+        </section>
+        <section id="scope">
+          <h2>Knowledge and authority</h2><p>
+            The agent is restricted to the screened public file at <a
+              href="/agent-context.md">agent-context.md</a
+            >. It does not discuss salary, visa status, private contact
+            information, unpublished reviews, or Author Console content, and
+            cannot promise employment, meetings, collaboration, or other
+            commitments on Zerun’s behalf.
+          </p><p>
+            Questions not supported by the public knowledge file receive an
+            explicit “I do not have reliable information” response. For
+            corrections, email <a href="mailto:zerun.niu@sydney.edu.au"
+              >zerun.niu@sydney.edu.au</a
+            >.
+          </p>
+        </section>
+      </div>
+    </div>
+  </article>
+</BaseLayout>
+<style>
+  header {
+    max-width: 65rem;
+  }
+  .privacy-grid {
+    display: grid;
+    grid-template-columns: 13rem 1fr;
+    gap: 4rem;
+    margin-top: 4rem;
+  }
+  nav {
+    position: sticky;
+    top: 6rem;
+    height: fit-content;
+    display: grid;
+    border-top: 1px solid var(--cyan);
+  }
+  nav a {
+    padding: 0.65rem 0;
+    border-bottom: 1px solid var(--line);
+    color: var(--muted);
+    font:
+      0.65rem/1.4 "Geist Mono Variable",
+      monospace;
+  }
+  nav a:hover {
+    color: var(--cyan);
+  }
+  .prose section {
+    scroll-margin-top: 7rem;
+  }
+  @media (max-width: 760px) {
+    .privacy-grid {
+      grid-template-columns: 1fr;
+    }
+    nav {
+      position: static;
+    }
+  }
+</style>

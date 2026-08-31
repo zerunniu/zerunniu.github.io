@@ -1,0 +1,107 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PublicationRow from "../components/PublicationRow.astro";
+const publications = (await getCollection("publications")).sort(
+  (a, b) =>
+    b.data.year - a.data.year || a.data.title.localeCompare(b.data.title),
+);
+const schema = publications.map((paper) => ({
+  "@context": "https://schema.org",
+  "@type": "ScholarlyArticle",
+  headline: paper.data.title,
+  datePublished: String(paper.data.year),
+  author: paper.data.authors.map((name) => ({ "@type": "Person", name })),
+  isPartOf: { "@type": "Periodical", name: paper.data.venue },
+  url:
+    paper.data.openreview ??
+    (paper.data.arxiv
+      ? `https://arxiv.org/abs/${paper.data.arxiv}`
+      : undefined),
+}));
+---
+
+<BaseLayout
+  title="Publications"
+  description="Publications by Zerun Niu in reliable machine learning, federated learning, and wireless semantic communication."
+  structuredData={schema}
+>
+  <section class="page-shell">
+    <span class="eyebrow">Publication record</span>
+    <div class="page-intro">
+      <h1>
+        Evidence, status, <span class="gradient-text">provenance.</span>
+      </h1><p class="lede">
+        Every listing uses a precise status. BRAVE is first-author work under
+        review at TMLR; WaSeCom is published in IEEE JSAC.
+      </p>
+    </div>
+    <div class="status-key">
+      <span><i class="published"></i>Published</span><span
+        ><i class="review"></i>Under review</span
+      ><span><i class="submitted"></i>Submitted</span>
+    </div>
+    <div class="papers">
+      {
+        publications.map((paper) => (
+          <PublicationRow publication={paper.data} slug={paper.id} />
+        ))
+      }
+    </div>
+    <p class="record-note">
+      Author lists abbreviated with “et al.” are updated when complete public
+      metadata is available. Under-review status does not imply acceptance.
+    </p>
+  </section>
+</BaseLayout>
+<style>
+  .page-intro {
+    display: grid;
+    grid-template-columns: 1.1fr 0.55fr;
+    gap: 2rem;
+    align-items: end;
+  }
+  .status-key {
+    display: flex;
+    gap: 1.2rem;
+    margin: 2.5rem 0;
+    color: var(--muted);
+    font:
+      0.62rem/1.4 "Geist Mono Variable",
+      monospace;
+  }
+  .status-key span {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .status-key i {
+    width: 0.45rem;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--muted);
+  }
+  .status-key .published {
+    background: var(--success);
+  }
+  .status-key .review {
+    background: var(--orange);
+  }
+  .status-key .submitted {
+    background: var(--indigo);
+  }
+  .papers {
+    border-bottom: 1px solid var(--line);
+  }
+  .record-note {
+    max-width: 70ch;
+    margin-top: 2rem;
+    color: var(--muted);
+    font-size: 0.75rem;
+  }
+  @media (max-width: 760px) {
+    .page-intro {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

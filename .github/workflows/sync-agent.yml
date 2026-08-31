@@ -1,0 +1,26 @@
+name: Refresh Digital Zerun knowledge
+
+on:
+  workflow_run:
+    workflows: ["Build, test, and deploy Pages"]
+    types: [completed]
+  schedule:
+    - cron: "17 16 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  refresh:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    environment: github-pages
+    steps:
+      - name: Check public knowledge file
+        run: curl --fail --retry 4 https://zerunniu.github.io/agent-context.md | grep -q "Digital Zerun"
+      - name: Refresh ElevenLabs URL document
+        run: |
+          curl --fail --request POST \
+            "https://api.elevenlabs.io/v1/convai/knowledge-base/${{ secrets.ELEVENLABS_KB_DOCUMENT_ID }}/refresh" \
+            --header "xi-api-key: ${{ secrets.ELEVENLABS_SYNC_API_KEY }}"
