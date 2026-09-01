@@ -14,6 +14,21 @@ type ElevenSdk = typeof import("@elevenlabs/react");
 type ClientTools = import("@elevenlabs/react").ClientTools;
 type UseConversationHook = ElevenSdk["useConversation"];
 
+const sessionErrorMessages: Record<string, string> = {
+  visitor_limit:
+    "This device reached the three-session trial limit. Please wait 10 minutes.",
+  daily_limit: "Digital Zerun has reached today's session limit.",
+  turnstile_failed: "Cloudflare verification failed. Please try again.",
+  elevenlabs_auth_failed:
+    "The ElevenLabs Runtime Key is invalid or missing ElevenAgents access.",
+  elevenlabs_agent_not_found:
+    "The configured ElevenLabs Agent ID could not be found.",
+  elevenlabs_quota_exhausted:
+    "The ElevenLabs plan or Runtime Key credit quota has been exhausted.",
+  voice_service_unavailable:
+    "The voice provider is temporarily unavailable. Static research mode remains available.",
+};
+
 const fallbackAnswers = [
   {
     keys: ["brave", "first author", "controlled evidence"],
@@ -233,7 +248,15 @@ function AgentInterface({
           credentials: "omit",
         },
       );
-      if (!response.ok) throw new Error("Session service is at capacity.");
+      if (!response.ok) {
+        const result = (await response.json().catch(() => ({}))) as {
+          error?: string;
+        };
+        throw new Error(
+          sessionErrorMessages[result.error ?? ""] ??
+            "The private session could not be started.",
+        );
+      }
       const { signedUrl } = (await response.json()) as { signedUrl: string };
       conversation.startSession({
         signedUrl,

@@ -81,6 +81,60 @@ describe("voice session worker", () => {
     });
   });
 
+  it.each([
+    [401, "elevenlabs_auth_failed"],
+    [403, "elevenlabs_auth_failed"],
+    [404, "elevenlabs_agent_not_found"],
+    [422, "elevenlabs_agent_not_found"],
+    [429, "elevenlabs_quota_exhausted"],
+    [500, "voice_service_unavailable"],
+  ])("maps ElevenLabs status %i to %s", async (status, error) => {
+    const failingFetcher: typeof fetch = async (input) => {
+      if (String(input).includes("siteverify"))
+        return Response.json({
+          success: true,
+          hostname: "zerunniu.github.io",
+        });
+      return new Response(null, { status });
+    };
+    const response = await handleRequest(
+      request(),
+      env(),
+      failingFetcher,
+      Date.UTC(2026, 7, 31),
+    );
+    expect(response.status).toBe(503);
+    expect(await response.json()).toMatchObject({
+      error,
+      fallback: "static_search",
+    });
+  });
+
+  it("does not consume the visitor limit when ElevenLabs rejects a request", async () => {
+    const shared = env();
+    const now = Date.UTC(2026, 7, 31);
+    const failingFetcher: typeof fetch = async (input) => {
+      if (String(input).includes("siteverify"))
+        return Response.json({
+          success: true,
+          hostname: "zerunniu.github.io",
+        });
+      return new Response(null, { status: 401 });
+    };
+    for (let i = 0; i < 4; i += 1) {
+      const response = await handleRequest(
+        request(),
+        shared,
+        failingFetcher,
+        now,
+      );
+      expect(response.status).toBe(503);
+      expect(await response.json()).toMatchObject({
+        error: "elevenlabs_auth_failed",
+      });
+    }
+  });
+
   it("keeps health output configuration-free", async () => {
     const response = await handleRequest(
       new Request("https://worker.example/api/health"),

@@ -8,6 +8,21 @@ export interface Env {
 }
 
 type Fetcher = typeof fetch;
+type VoiceServiceErrorCode =
+  | "elevenlabs_auth_failed"
+  | "elevenlabs_agent_not_found"
+  | "elevenlabs_quota_exhausted"
+  | "voice_service_unavailable";
+
+class VoiceServiceError extends Error {
+  constructor(
+    readonly code: VoiceServiceErrorCode,
+    readonly upstreamStatus: number,
+  ) {
+    super(code);
+  }
+}
+
 const ALLOWED_ORIGIN = "https://zerunniu.github.io";
 const WINDOW_SECONDS = 600;
 const PER_VISITOR_LIMIT = 3;
@@ -69,14 +84,14 @@ async function validateTurnstile(
   return result.success === true && result.hostname === "zerunniu.github.io";
 }
 
-async function enforceLimits(request: Request, env: Env, now: number) {
+async function checkLimits(request: Request, env: Env, now: number) {
   const bucket = Math.floor(now / (WINDOW_SECONDS * 1000));
   const ip = request.headers.get("CF-Connecting-IP") ?? "unavailable";
   const visitorHash = await shortHash(`${env.IP_HASH_SALT}:${bucket}:${ip}`);
   const visitorKey = `visitor:${bucket}:${visitorHash}`;
   const visitorCount = Number((await env.RATE_LIMIT.get(visitorKey)) ?? "0");
   if (visitorCount >= PER_VISITOR_LIMIT)
-    return { allowed: false, reason: "visitor_limit" as const };
+    return { allowed: false as const, reason: "visitor_limit" as const };
 
   const date = new Date(now).toISOString().slice(0, 10);
   const dailyKey = `daily:${date}`;
@@ -86,17 +101,29 @@ async function enforceLimits(request: Request, env: Env, now: number) {
     Number(env.DAILY_SESSION_LIMIT ?? DEFAULT_DAILY_LIMIT),
   );
   if (dailyCount >= dailyLimit)
-    return { allowed: false, reason: "daily_limit" as const };
+    return { allowed: false as const, reason: "daily_limit" as const };
 
+  return {
+    allowed: true as const,
+    visitorKey,
+    visitorCount,
+    dailyKey,
+    dailyCount,
+  };
+}
+
+async function recordSessionStart(
+  env: Env,
+  limit: Extract<Awaited<ReturnType<typeof checkLimits>>, { allowed: true }>,
+) {
   await Promise.all([
-    env.RATE_LIMIT.put(visitorKey, String(visitorCount + 1), {
+    env.RATE_LIMIT.put(limit.visitorKey, String(limit.visitorCount + 1), {
       expirationTtl: WINDOW_SECONDS,
     }),
-    env.RATE_LIMIT.put(dailyKey, String(dailyCount + 1), {
+    env.RATE_LIMIT.put(limit.dailyKey, String(limit.dailyCount + 1), {
       expirationTtl: 172800,
     }),
   ]);
-  return { allowed: true as const };
 }
 
 async function requestSignedUrl(env: Env, fetcher: Fetcher) {
@@ -108,10 +135,19 @@ async function requestSignedUrl(env: Env, fetcher: Fetcher) {
     headers: { "xi-api-key": env.ELEVENLABS_API_KEY },
     signal: AbortSignal.timeout(8000),
   });
-  if (!response.ok)
-    throw new Error(
-      `ElevenLabs signed URL request failed with ${response.status}`,
-    );
+  if (!response.ok) {
+    const code: VoiceServiceErrorCode =
+      response.status === 401 || response.status === 403
+        ? "elevenlabs_auth_failed"
+        : response.status === 400 ||
+            response.status === 404 ||
+            response.status === 422
+          ? "elevenlabs_agent_not_found"
+          : response.status === 429
+            ? "elevenlabs_quota_exhausted"
+            : "voice_service_unavailable";
+    throw new VoiceServiceError(code, response.status);
+  }
   const data = (await response.json()) as { signed_url?: string };
   if (!data.signed_url?.startsWith("wss://"))
     throw new Error("ElevenLabs returned an invalid signed URL");
@@ -161,7 +197,7 @@ export async function handleRequest(
       fetcher,
     );
     if (!verified) return json({ error: "turnstile_failed" }, 403, origin);
-    const limit = await enforceLimits(request, env, now);
+    const limit = await checkLimits(request, env, now);
     if (!limit.allowed)
       return json(
         { error: limit.reason, fallback: "static_search" },
@@ -169,14 +205,24 @@ export async function handleRequest(
         origin,
       );
     const signedUrl = await requestSignedUrl(env, fetcher);
+    await recordSessionStart(env, limit);
     return json(
       { signedUrl, expiresInSeconds: 900, maxSessionSeconds: 300 },
       200,
       origin,
     );
-  } catch {
+  } catch (error) {
+    const serviceError = error instanceof VoiceServiceError ? error : undefined;
+    if (serviceError)
+      console.error("ElevenLabs signed URL request failed", {
+        status: serviceError.upstreamStatus,
+        code: serviceError.code,
+      });
     return json(
-      { error: "voice_service_unavailable", fallback: "static_search" },
+      {
+        error: serviceError?.code ?? "voice_service_unavailable",
+        fallback: "static_search",
+      },
       503,
       origin,
     );
