@@ -2,7 +2,6 @@
 import "@fontsource-variable/geist";
 import "@fontsource-variable/geist-mono";
 import "../styles/global.css";
-import CommandPaletteShell from "../components/CommandPaletteShell.astro";
 
 interface Props {
   title?: string;
@@ -12,38 +11,34 @@ interface Props {
 }
 
 const {
-  title = "Zerun Niu — AI Researcher & ML Systems Engineer",
-  description = "Zerun Niu builds reliable, efficient AI systems across federated learning, semantic communication, and trustworthy machine learning.",
+  title = "Zerun Niu — AI Research Engineer",
+  description =
+    "Zerun Niu — AI Research Engineer working on agentic AI and reliable ML: federated learning, semantic communication, calibration, and reproducible systems.",
   image = "/assets/og-zerun-lab.png",
   structuredData,
 } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const pageTitle = title.startsWith("Zerun") ? title : `${title} — Zerun Niu`;
 const nav = [
-  ["Research", "/projects"],
-  ["Publications", "/publications"],
-  ["Experience", "/experience"],
-  ["Notes", "/notes"],
-  ["CV", "/cv"],
+  ["Research", "/#research"],
+  ["Publications", "/#publications"],
+  ["Experience", "/#experience"],
+  ["Digital Zerun", "/#digital-zerun"],
+  ["Contact", "/#contact"],
 ];
 ---
 
 <!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <meta name="theme-color" content="#080b12" />
+    <meta name="theme-color" content="#f3f4f6" />
     <meta name="description" content={description} />
     <meta name="generator" content={Astro.generator} />
     <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link
-      rel="alternate"
-      type="application/rss+xml"
-      title="Zerun Niu research notes"
-      href="/rss.xml"
-    />
+    <link rel="apple-touch-icon" href="/assets/zerun-niu-180.png" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
@@ -64,52 +59,57 @@ const nav = [
       )
     }
     <script is:inline>
-      const savedTheme = localStorage.getItem("zerun-theme");
-      const preferred = matchMedia("(prefers-color-scheme: light)").matches
-        ? "light"
-        : "dark";
-      document.documentElement.dataset.theme = savedTheme || preferred;
+      try {
+        const saved = localStorage.getItem("zerun-theme");
+        if (saved === "light" || saved === "dark")
+          document.documentElement.dataset.theme = saved;
+      } catch (e) {}
     </script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
     <div class="site-grid" aria-hidden="true"></div>
+    <div class="cursor-dot" aria-hidden="true"></div>
+    <div class="cursor-ring" aria-hidden="true"></div>
     <header class="site-header">
       <a class="brand" href="/" aria-label="Zerun Niu home">
         <span class="brand-mark" aria-hidden="true">ZN</span>
         <span>
           <strong>Zerun Niu</strong>
-          <small>AI research systems</small>
+          <small>AI Research Engineer</small>
         </span>
       </a>
-      <nav aria-label="Primary navigation">
+      <nav id="primary-nav" aria-label="Primary navigation">
         {
           nav.map(([label, href]) => (
-            <a
-              href={href}
-              aria-current={
-                Astro.url.pathname.startsWith(href) ? "page" : undefined
-              }
-            >
-              {label}
-            </a>
+            <a href={href}>{label}</a>
           ))
         }
       </nav>
       <div class="header-actions">
         <button
-          class="command-trigger"
+          class="pill"
           type="button"
-          data-command-trigger
-          aria-label="Open command menu"
+          data-magnetic
+          onclick="document.getElementById('digital-zerun')?.scrollIntoView()"
         >
-          <span>Navigate</span><kbd>⌘ K</kbd>
+          <i aria-hidden="true"></i> Talk to Digital Zerun
+        </button>
+        <button
+          class="nav-toggle"
+          type="button"
+          data-nav-toggle
+          aria-controls="primary-nav"
+          aria-expanded="false"
+          aria-label="Open menu"
+        >
+          <span aria-hidden="true">≡</span>
         </button>
         <button
           class="icon-button"
           type="button"
           data-theme-toggle
-          aria-label="Switch to light theme"
+          aria-label="Switch colour theme"
         >
           <span aria-hidden="true">◐</span>
         </button>
@@ -118,47 +118,86 @@ const nav = [
     <main id="main-content">
       <slot />
     </main>
-    <footer class="site-footer">
+    <footer class="site-footer" id="contact">
       <div>
-        <span class="eyebrow">Signal remains open</span>
-        <p>Building reliable AI systems from Sydney.</p>
+        <span class="eyebrow">Contact</span>
+        <h2>Signal remains open.</h2>
       </div>
+      <a class="footer-mail" href="mailto:zerun.niu@sydney.edu.au"
+        >zerun.niu@sydney.edu.au</a
+      >
       <div class="footer-links">
-        <a href="mailto:zerun.niu@sydney.edu.au">Email</a>
-        <a href="https://www.linkedin.com/in/zerun-niu-265015300">LinkedIn</a>
         <a href="https://github.com/zerunniu">GitHub</a>
+        <a href="https://www.linkedin.com/in/zerun-niu-265015300">LinkedIn</a>
+        <a href="https://scholar.google.com/citations?user=2dTScwcAAAAJ"
+          >Google Scholar</a
+        >
+        <a href="/assets/Zerun_Niu_Research_Engineer_Resume.pdf"
+          >Industry résumé · PDF</a
+        >
+        <a href="/assets/Zerun_Niu_Academic_CV.pdf">Academic CV · PDF</a>
         <a href="/privacy">Privacy</a>
       </div>
       <small
-        >© {new Date().getFullYear()} Zerun Niu. No tracking, no behavioural analytics.</small
+        >© {new Date().getFullYear()} Zerun Niu. Built in Sydney. No tracking, no
+        behavioural analytics.</small
       >
     </footer>
-    <CommandPaletteShell />
+    <script>
+      import "../scripts/interactions.ts";
+    </script>
+    <script is:inline>
+      (() => {
+        const toggle = document.querySelector("[data-nav-toggle]");
+        const menu = document.getElementById("primary-nav");
+        if (!(toggle instanceof HTMLButtonElement) || !menu) return;
+        const set = (open) => {
+          menu.toggleAttribute("data-open", open);
+          toggle.setAttribute("aria-expanded", String(open));
+          toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+        };
+        toggle.addEventListener("click", () =>
+          set(!menu.hasAttribute("data-open")),
+        );
+        menu.addEventListener("click", (e) => {
+          if (e.target instanceof HTMLAnchorElement) set(false);
+        });
+        document.addEventListener("click", (e) => {
+          if (
+            menu.hasAttribute("data-open") &&
+            !menu.contains(e.target) &&
+            !toggle.contains(e.target)
+          )
+            set(false);
+        });
+        window.addEventListener("keydown", (e) => {
+          if (e.key === "Escape") set(false);
+        });
+      })();
+    </script>
     <script is:inline>
       (() => {
         const button = document.querySelector("[data-theme-toggle]");
         if (!(button instanceof HTMLButtonElement)) return;
-
+        const root = document.documentElement;
+        const isDark = () =>
+          root.dataset.theme === "dark" ||
+          (!root.dataset.theme &&
+            matchMedia("(prefers-color-scheme: dark)").matches);
         const render = () => {
-          const current =
-            document.documentElement.dataset.theme === "light"
-              ? "light"
-              : "dark";
+          const icon = button.querySelector("span");
+          if (icon) icon.textContent = isDark() ? "◑" : "◐";
           button.setAttribute(
             "aria-label",
-            `Switch to ${current === "dark" ? "light" : "dark"} theme`,
+            `Switch to ${isDark() ? "light" : "dark"} theme`,
           );
-          const icon = button.querySelector("span");
-          if (icon) icon.textContent = current === "dark" ? "◐" : "◑";
         };
-
         button.addEventListener("click", () => {
-          const next =
-            document.documentElement.dataset.theme === "dark"
-              ? "light"
-              : "dark";
-          document.documentElement.dataset.theme = next;
-          localStorage.setItem("zerun-theme", next);
+          const next = isDark() ? "light" : "dark";
+          root.dataset.theme = next;
+          try {
+            localStorage.setItem("zerun-theme", next);
+          } catch (e) {}
           render();
         });
         render();

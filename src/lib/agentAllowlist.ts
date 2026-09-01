@@ -1,11 +1,13 @@
+// The site is a single page plus /privacy. Client tools may only resolve to
+// these exact routes / in-page anchors.
 export const allowedPaths = new Set([
   "/",
-  "/projects",
-  "/publications",
-  "/experience",
-  "/notes",
-  "/cv",
   "/privacy",
+  "/#research",
+  "/#publications",
+  "/#experience",
+  "/#digital-zerun",
+  "/#contact",
 ]);
 export const allowedProjects = new Set([
   "brave",
@@ -34,13 +36,11 @@ export const allowedTags = new Set([
 export const allowedResume = new Set(["industry", "academic"]);
 
 export function projectPath(slug: string) {
-  return allowedProjects.has(slug) ? `/projects/${slug}` : null;
+  return allowedProjects.has(slug) ? `/#p-${slug}` : null;
 }
 
 export function researchFilterPath(tag: string) {
-  return allowedTags.has(tag)
-    ? `/projects?tag=${encodeURIComponent(tag)}`
-    : null;
+  return allowedTags.has(tag) ? "/#research" : null;
 }
 
 export function resumePath(variant: string) {

@@ -5,16 +5,12 @@ const root = process.cwd();
 const dist = path.join(root, "dist");
 const required = [
   "index.html",
-  "projects/brave/index.html",
-  "publications/index.html",
-  "experience/index.html",
-  "notes/index.html",
-  "cv/index.html",
+  "404.html",
   "privacy/index.html",
   "agent-context.md",
   "llms.txt",
   "sitemap-index.xml",
-  "rss.xml",
+  "fonts/newsreader-latin.woff2",
   "assets/Zerun_Niu_Research_Engineer_Resume.pdf",
   "assets/Zerun_Niu_Academic_CV.pdf",
   "assets/og-zerun-lab.png",

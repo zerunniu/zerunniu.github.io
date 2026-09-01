@@ -1,0 +1,310 @@
+---
+/**
+ * Hero visual: a core sphere with two orbiting rings of focus-area labels.
+ * Pure canvas 2D + one rAF loop. Pointer-reactive (nearest label lights up and
+ * links back to the core). Renders a single static frame under reduced motion.
+ */
+---
+
+<div class="skills-orb" id="skills-orb">
+  <canvas id="skills-orb-canvas"></canvas>
+  <div class="skills-orb__meta">
+    <span>Focus areas</span>
+    <span id="skills-orb-pick"></span>
+  </div>
+  <span class="skills-orb__hint">move the cursor to trace a link</span>
+</div>
+
+<style>
+  .skills-orb {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    overflow: hidden;
+    background:
+      radial-gradient(
+        circle at 50% 42%,
+        color-mix(in srgb, var(--cyan) 9%, transparent),
+        transparent 60%
+      ),
+      var(--panel-solid);
+    box-shadow: var(--shadow);
+  }
+
+  .skills-orb canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .skills-orb__meta {
+    position: absolute;
+    top: 12px;
+    left: 14px;
+    right: 14px;
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    font: 400 0.62rem/1.4 var(--font-mono);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--faint);
+    pointer-events: none;
+  }
+
+  .skills-orb__meta span:last-child {
+    color: var(--cyan-soft);
+    text-align: right;
+  }
+
+  .skills-orb__hint {
+    position: absolute;
+    left: 14px;
+    bottom: 12px;
+    font: 400 0.6rem/1.4 var(--font-mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--faint);
+    opacity: 0.7;
+    pointer-events: none;
+  }
+
+  @media (max-width: 880px) {
+    .skills-orb {
+      max-width: 380px;
+      margin-inline: auto;
+    }
+  }
+</style>
+
+<script>
+  type Skill = { t: string; ring: number; base: number };
+  type OrbNode = { s: Skill; x: number; y: number; depth: number };
+
+  const stage = document.getElementById("skills-orb");
+  const canvas = document.getElementById(
+    "skills-orb-canvas",
+  ) as HTMLCanvasElement | null;
+  const pickEl = document.getElementById("skills-orb-pick");
+  const ctx = canvas ? canvas.getContext("2d") : null;
+
+  if (stage && canvas && ctx) {
+    const reduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    const css = getComputedStyle(document.documentElement);
+    let W = 0;
+    let H = 0;
+    const DPR = Math.min(window.devicePixelRatio || 1, 2);
+
+    const resize = () => {
+      const r = stage.getBoundingClientRect();
+      W = r.width;
+      H = r.height;
+      canvas.width = W * DPR;
+      canvas.height = H * DPR;
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    };
+    resize();
+    window.addEventListener("resize", resize);
+
+    // inner ring = the headline focus; outer ring = the working toolkit
+    const SKILLS: Skill[] = [
+      { t: "AI research", ring: 0, base: 0 },
+      { t: "Agent pipelines", ring: 0, base: 0 },
+      { t: "Federated learning", ring: 0, base: 0 },
+      { t: "Semantic comms", ring: 0, base: 0 },
+      { t: "LLM orchestration", ring: 1, base: 0 },
+      { t: "RAG systems", ring: 1, base: 0 },
+      { t: "Model calibration", ring: 1, base: 0 },
+      { t: "Eval & guardrails", ring: 1, base: 0 },
+      { t: "Reproducible ML", ring: 1, base: 0 },
+    ];
+    const groups: Skill[][] = [
+      SKILLS.filter((s) => s.ring === 0),
+      SKILLS.filter((s) => s.ring === 1),
+    ];
+    groups.forEach((grp) =>
+      grp.forEach((s, i) => {
+        s.base = (i / grp.length) * Math.PI * 2;
+      }),
+    );
+    const RINGS = [
+      { rx: 0.26, ry: 0.14, spd: 0.00022, tilt: -0.16 },
+      { rx: 0.35, ry: 0.2, spd: -0.00014, tilt: 0.12 },
+    ];
+    const dust = Array.from({ length: 32 }, () => ({
+      a: Math.random() * Math.PI * 2,
+      r: 0.5 + Math.random() * 0.8,
+      s: 0.0006 + Math.random() * 0.002,
+      z: Math.random(),
+    }));
+
+    let mx = 0.5;
+    let my = 0.5;
+    let hovered = false;
+    stage.addEventListener(
+      "mousemove",
+      (e) => {
+        const r = stage.getBoundingClientRect();
+        mx = (e.clientX - r.left) / r.width;
+        my = (e.clientY - r.top) / r.height;
+        hovered = true;
+      },
+      { passive: true },
+    );
+    stage.addEventListener("mouseleave", () => {
+      mx = 0.5;
+      my = 0.5;
+      hovered = false;
+    });
+
+    const readColours = () => ({
+      a: css.getPropertyValue("--indigo").trim() || "#4f6ff0",
+      b: css.getPropertyValue("--cyan").trim() || "#2f52d4",
+      ink: css.getPropertyValue("--faint").trim() || "#878d99",
+      sig: css.getPropertyValue("--cyan-soft").trim() || "#2039a6",
+    });
+    const rgba = (hex: string, a: number) => {
+      let h = String(hex).replace("#", "");
+      if (h.length === 3)
+        h = h
+          .split("")
+          .map((ch) => ch + ch)
+          .join("");
+      if (h.length !== 6) return hex;
+      const n = parseInt(h, 16);
+      return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${a})`;
+    };
+
+    const draw = (t: number) => {
+      const c = readColours();
+      ctx.clearRect(0, 0, W, H);
+      const base = Math.min(W, H);
+      const cx = W / 2 + (mx - 0.5) * 20;
+      const cy = H * 0.44 + (my - 0.5) * 16;
+      const gx = cx + (mx - 0.5) * base * 0.42;
+      const gy = cy + (my - 0.5) * base * 0.4;
+
+      RINGS.forEach((rg) => {
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(rg.tilt);
+        ctx.beginPath();
+        ctx.ellipse(0, 0, base * rg.rx, base * rg.ry, 0, 0, Math.PI * 2);
+        ctx.strokeStyle = rgba(c.a, 0.14);
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        ctx.restore();
+      });
+
+      dust.forEach((p) => {
+        p.a += p.s;
+        const x = cx + Math.cos(p.a) * base * 0.5 * p.r;
+        const y = cy + Math.sin(p.a) * base * 0.18 * p.r;
+        ctx.beginPath();
+        ctx.arc(x, y, 0.5 + p.z * 1.3, 0, Math.PI * 2);
+        ctx.fillStyle = rgba(c.ink, 0.1 + p.z * 0.34);
+        ctx.fill();
+      });
+
+      const nodes: OrbNode[] = [];
+      groups.forEach((grp, gi) => {
+        const rg = RINGS[gi];
+        grp.forEach((s) => {
+          const ang = s.base + t * rg.spd;
+          const lx = Math.cos(ang) * base * rg.rx;
+          const ly = Math.sin(ang) * base * rg.ry;
+          const x = cx + lx * Math.cos(rg.tilt) - ly * Math.sin(rg.tilt);
+          const y = cy + lx * Math.sin(rg.tilt) + ly * Math.cos(rg.tilt);
+          nodes.push({ s, x, y, depth: (Math.sin(ang) + 1) / 2 });
+        });
+      });
+
+      let pick: OrbNode | null = null;
+      let pd = 1e9;
+      if (hovered) {
+        for (const n of nodes) {
+          const d = Math.hypot(n.x - gx, n.y - gy);
+          if (d < pd) {
+            pd = d;
+            pick = n;
+          }
+        }
+        if (pd > base * 0.62) pick = null;
+      }
+      if (pickEl) pickEl.textContent = pick ? pick.s.t : "";
+
+      nodes.sort((p, q) => p.depth - q.depth);
+
+      const label = (n: OrbNode) => {
+        const isPick = pick === n;
+        const far = Math.abs(n.x - cx) > base * 0.18;
+        const dir = far ? (n.x < cx ? 1 : -1) : n.x < cx ? -1 : 1;
+        const edge = 1 - Math.min(1, Math.abs(n.x - cx) / (base * 0.48));
+        const fs = base * (0.027 + n.depth * 0.019);
+        let alpha = (0.1 + n.depth * n.depth * 0.9) * (0.62 + 0.38 * edge);
+        if (isPick) alpha = 1;
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, isPick ? 3.2 : 1.6 + n.depth * 1.8, 0, Math.PI * 2);
+        ctx.fillStyle = isPick ? c.sig : rgba(c.a, Math.min(1, alpha + 0.1));
+        ctx.fill();
+        ctx.font = `500 ${fs}px "Geist Mono Variable", ui-monospace, monospace`;
+        ctx.textAlign = dir < 0 ? "right" : "left";
+        ctx.textBaseline = "middle";
+        ctx.fillStyle = isPick ? c.sig : rgba(c.ink, alpha);
+        ctx.fillText(n.s.t, n.x + dir * 10, n.y);
+        if (isPick) {
+          const w = ctx.measureText(n.s.t).width;
+          ctx.strokeStyle = rgba(c.sig, 0.6);
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(n.x + dir * 10 + (dir < 0 ? -w : 0), n.y + fs * 0.62);
+          ctx.lineTo(n.x + dir * 10 + (dir < 0 ? 0 : w), n.y + fs * 0.62);
+          ctx.stroke();
+        }
+      };
+
+      for (const n of nodes) if (n.depth < 0.46) label(n);
+
+      if (pick) {
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(pick.x, pick.y);
+        ctx.strokeStyle = rgba(c.sig, 0.45);
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+
+      const R = base * 0.12 * (1 + Math.sin(t / 1400) * 0.02);
+      const g = ctx.createRadialGradient(
+        cx - R * 0.35,
+        cy - R * 0.4,
+        R * 0.1,
+        cx,
+        cy,
+        R * 1.2,
+      );
+      g.addColorStop(0, "#ffffff");
+      g.addColorStop(0.25, c.a);
+      g.addColorStop(1, c.b);
+      ctx.beginPath();
+      ctx.arc(cx, cy, R, 0, Math.PI * 2);
+      ctx.fillStyle = g;
+      ctx.shadowColor = rgba(c.b, 0.4);
+      ctx.shadowBlur = 36;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+
+      for (const n of nodes) if (n.depth >= 0.46) label(n);
+
+      if (!reduced) requestAnimationFrame(draw);
+    };
+
+    if (reduced) draw(0);
+    else requestAnimationFrame(draw);
+  }
+</script>

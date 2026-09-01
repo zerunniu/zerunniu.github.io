@@ -1,6 +1,6 @@
 ---
 name: Zerun Niu
-headline: AI Researcher & ML Systems Engineer
+headline: AI Research Engineer working on agentic AI and reliable ML systems
 email: zerun.niu@sydney.edu.au
 location: Sydney, Australia
 summary: MPhil researcher at the University of Sydney building reliable, efficient AI systems across federated learning, semantic communication, and trustworthy machine learning.

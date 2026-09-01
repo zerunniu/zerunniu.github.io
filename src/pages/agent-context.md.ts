@@ -32,7 +32,7 @@ export async function GET() {
     "## Research projects",
     ...projects.map(
       (project) =>
-        `- ${project.data.shortTitle} (${project.data.status.replace("-", " ")}): ${project.data.agentSummary} Public evidence: ${project.data.metrics.map((metric) => `${metric.value} ${metric.label}`).join("; ") || "see project page"}.`,
+        `- ${project.data.shortTitle} (${project.data.status.replace("-", " ")}): ${project.data.agentSummary} Public evidence: ${project.data.metrics.map((metric) => `${metric.value} ${metric.label}`).join("; ") || "see zerunniu.github.io"}.`,
     ),
     "",
     "## Publications",

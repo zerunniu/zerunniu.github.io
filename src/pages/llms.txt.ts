@@ -6,18 +6,19 @@ export async function GET() {
   );
   const body = [
     "# Zerun Niu",
-    "> AI researcher and ML systems engineer working on reliable and efficient AI.",
+    "> AI Research Engineer working on agentic AI and reliable ML: federated learning, semantic communication, calibration, and reproducible systems.",
     "",
     "## Canonical resources",
+    "- [Site](https://zerunniu.github.io/)",
     "- [Screened agent knowledge](https://zerunniu.github.io/agent-context.md)",
-    "- [Publications](https://zerunniu.github.io/publications)",
-    "- [Experience](https://zerunniu.github.io/experience)",
-    "- [CV](https://zerunniu.github.io/cv)",
+    "- [Industry résumé (PDF)](https://zerunniu.github.io/assets/Zerun_Niu_Research_Engineer_Resume.pdf)",
+    "- [Academic CV (PDF)](https://zerunniu.github.io/assets/Zerun_Niu_Academic_CV.pdf)",
+    "- [Privacy](https://zerunniu.github.io/privacy)",
     "",
     "## Projects",
     ...projects.map(
       (project) =>
-        `- [${project.data.shortTitle}](https://zerunniu.github.io/projects/${project.id}): ${project.data.summary}`,
+        `- ${project.data.shortTitle}: ${project.data.summary}`,
     ),
     "",
     "Under-review work must remain labelled under review.",

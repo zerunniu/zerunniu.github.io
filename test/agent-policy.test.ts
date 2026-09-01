@@ -43,24 +43,28 @@ describe("Digital Zerun public facts", () => {
 });
 
 describe("client tool allowlists", () => {
-  it("accepts exact local routes", () =>
-    expect(allowedPaths.has("/publications")).toBe(true));
+  it("accepts exact local routes and in-page anchors", () => {
+    expect(allowedPaths.has("/")).toBe(true);
+    expect(allowedPaths.has("/privacy")).toBe(true);
+    expect(allowedPaths.has("/#publications")).toBe(true);
+  });
   it("rejects arbitrary URLs and traversal", () => {
     for (const value of [
       "https://evil.example",
       "javascript:alert(1)",
       "//evil.example",
       "/../admin",
-      "/projects/brave?next=https://evil.example",
+      "/publications",
+      "/#research?next=https://evil.example",
     ])
       expect(allowedPaths.has(value)).toBe(false);
   });
   it("accepts only known project slugs", () => {
-    expect(projectPath("brave")).toBe("/projects/brave");
+    expect(projectPath("brave")).toBe("/#p-brave");
     expect(projectPath("../../privacy")).toBeNull();
   });
   it("accepts only known tags and resume variants", () => {
-    expect(researchFilterPath("Calibration")).toContain("Calibration");
+    expect(researchFilterPath("Calibration")).toBe("/#research");
     expect(researchFilterPath("<script>")).toBeNull();
     expect(resumePath("industry")).toContain("Research_Engineer");
     expect(resumePath("https://evil.example")).toBeNull();
