@@ -194,8 +194,13 @@ const personJsonLd = {
 
   <section class="section-shell" id="digital-zerun">
     <DigitalZerun
-      workerUrl={import.meta.env.PUBLIC_VOICE_WORKER_URL ?? ""}
-      turnstileSiteKey={import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? ""}
+      workerUrl={
+        import.meta.env.PUBLIC_VOICE_WORKER_URL ||
+        "https://zerun-digital-agent.zniu9834.workers.dev"
+      }
+      turnstileSiteKey={
+        import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || "0x4AAAAAAEjYuq_yJE2BdwkX"
+      }
       client:visible
     />
   </section>
