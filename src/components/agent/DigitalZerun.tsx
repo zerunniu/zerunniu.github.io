@@ -1,4 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react";
 import {
   allowedEvidence,
   allowedPaths,
@@ -9,7 +15,6 @@ import {
 import "./agent.css";
 
 type TranscriptLine = { role: "user" | "agent"; message: string };
-type Mode = "text" | "voice";
 type ElevenSdk = typeof import("@elevenlabs/react");
 type ClientTools = import("@elevenlabs/react").ClientTools;
 type UseConversationHook = ElevenSdk["useConversation"];
@@ -70,12 +75,6 @@ declare global {
   }
 }
 
-function dispatchOrb(state: string) {
-  window.dispatchEvent(
-    new CustomEvent("digital-zerun-state", { detail: state }),
-  );
-}
-
 function safeNavigate(path: string) {
   if (!allowedPaths.has(path))
     return "Navigation blocked: path is not in the local allowlist.";
@@ -90,6 +89,9 @@ function useStaticConversation() {
     startSession: async () => "",
     endSession: async () => undefined,
     sendUserMessage: () => undefined,
+    setMuted: () => undefined,
+    setVolume: () => undefined,
+    getInputByteFrequencyData: () => new Uint8Array(),
   } as unknown as ReturnType<UseConversationHook>;
 }
 
@@ -110,13 +112,18 @@ function AgentInterface({
 }) {
   const [transcript, setTranscript] = useState<TranscriptLine[]>([]);
   const [input, setInput] = useState("");
-  const [mode, setMode] = useState<Mode>("text");
   const [consent, setConsent] = useState(false);
   const [notice, setNotice] = useState("Ready for verified questions");
   const [starting, setStarting] = useState(false);
+  const [recording, setRecording] = useState(false);
+  const [micBlocked, setMicBlocked] = useState(false);
+  const [outputMuted, setOutputMuted] = useState(false);
+  const [level, setLevel] = useState(0);
   const turnstileHost = useRef<HTMLDivElement>(null);
   const widgetId = useRef<string>("");
   const tokenResolver = useRef<((token: string) => void) | null>(null);
+  const micBlockedRef = useRef(false);
+  const meterRaf = useRef<number | null>(null);
   const configured = Boolean(workerUrl && turnstileSiteKey);
 
   const clientTools = useMemo<ClientTools>(
@@ -164,20 +171,24 @@ function AgentInterface({
   );
 
   const conversation = useConversationHook({
+    micMuted: true,
     onConnect: () => {
-      setNotice("Session active · maximum 5 minutes");
-      dispatchOrb("listening");
+      setNotice(
+        micBlockedRef.current
+          ? "Connected · microphone blocked, text answers only"
+          : "Connected · mic is off until you tap record",
+      );
     },
     onDisconnect: () => {
       setNotice("Session ended · local transcript cleared");
       setTranscript([]);
-      dispatchOrb("idle");
+      setRecording(false);
+      stopMeter();
     },
     onError: () => {
       setNotice(
-        "Voice service unavailable · static research mode remains available",
+        "Voice service issue · verified text answers remain available",
       );
-      dispatchOrb("error");
     },
     onMessage: ({ role, message }) =>
       setTranscript((items) =>
@@ -189,9 +200,18 @@ function AgentInterface({
           } as TranscriptLine,
         ].slice(-12),
       ),
-    onModeChange: ({ mode: next }) =>
-      dispatchOrb(next === "speaking" ? "speaking" : "listening"),
   });
+
+  const connected = conversation.status === "connected";
+  const orbState = recording
+    ? "recording"
+    : conversation.isSpeaking
+      ? "speaking"
+      : starting
+        ? "thinking"
+        : connected
+          ? "listening"
+          : "idle";
 
   useEffect(() => {
     if (!configured || !runtimeReady || !turnstileHost.current) return;
@@ -222,6 +242,8 @@ function AgentInterface({
     }
   }, [configured, runtimeReady, turnstileSiteKey]);
 
+  useEffect(() => stopMeter, []);
+
   const getTurnstileToken = () =>
     new Promise<string>((resolve) => {
       if (!window.turnstile || !widgetId.current) return resolve("");
@@ -230,11 +252,31 @@ function AgentInterface({
       window.setTimeout(() => resolve(""), 15000);
     });
 
+  function stopMeter() {
+    if (meterRaf.current !== null) cancelAnimationFrame(meterRaf.current);
+    meterRaf.current = null;
+    setLevel(0);
+  }
+
+  const startMeter = () => {
+    const loop = () => {
+      try {
+        const data = conversation.getInputByteFrequencyData();
+        let sum = 0;
+        for (let i = 0; i < data.length; i += 1) sum += data[i];
+        setLevel(data.length ? Math.min(1, sum / data.length / 110) : 0);
+      } catch {
+        /* meter is best-effort */
+      }
+      meterRaf.current = requestAnimationFrame(loop);
+    };
+    loop();
+  };
+
   const startSession = async () => {
-    if (!configured || !runtimeReady || (mode === "voice" && !consent)) return;
+    if (!configured || !runtimeReady || !consent || starting) return;
     setStarting(true);
     setNotice("Verifying private session…");
-    dispatchOrb("thinking");
     try {
       const turnstileToken = await getTurnstileToken();
       if (!turnstileToken)
@@ -258,17 +300,29 @@ function AgentInterface({
         );
       }
       const { signedUrl } = (await response.json()) as { signedUrl: string };
+
+      let allowMic = true;
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+        });
+        stream.getTracks().forEach((track) => track.stop());
+      } catch {
+        allowMic = false;
+      }
+      micBlockedRef.current = !allowMic;
+      setMicBlocked(!allowMic);
+
       conversation.startSession({
         signedUrl,
         connectionType: "websocket",
-        textOnly: mode === "text",
+        textOnly: !allowMic,
         clientTools,
       });
     } catch (error) {
       setNotice(
         error instanceof Error ? error.message : "Session could not start.",
       );
-      dispatchOrb("error");
     } finally {
       setStarting(false);
       if (widgetId.current) window.turnstile?.reset(widgetId.current);
@@ -285,34 +339,64 @@ function AgentInterface({
     const answer =
       match?.answer ??
       "I do not have reliable information for that question. Please use the project pages, publications, CV, or contact Zerun directly.";
-    const userLine: TranscriptLine = { role: "user", message: question };
-    const agentLine: TranscriptLine = { role: "agent", message: answer };
-    setTranscript((items) => [...items, userLine, agentLine].slice(-12));
+    setTranscript((items) =>
+      [
+        ...items,
+        { role: "user", message: question } as TranscriptLine,
+        { role: "agent", message: answer } as TranscriptLine,
+      ].slice(-12),
+    );
     setInput("");
   };
 
   const sendText = () => {
-    if (!input.trim()) return;
-    if (conversation.status === "connected") {
-      conversation.sendUserMessage(input.trim());
+    const question = input.trim();
+    if (!question) return;
+    if (connected) {
+      conversation.sendUserMessage(question);
       setInput("");
-    } else askFallback();
+      setNotice("Sent · Digital Zerun is answering");
+    } else {
+      askFallback();
+    }
+  };
+
+  const toggleRecording = () => {
+    if (!connected || micBlocked) return;
+    const next = !recording;
+    setRecording(next);
+    conversation.setMuted(!next);
+    if (next) {
+      setNotice("Recording… tap again to send");
+      startMeter();
+    } else {
+      setNotice("Sent · Digital Zerun is answering");
+      stopMeter();
+    }
+  };
+
+  const toggleOutput = () => {
+    const next = !outputMuted;
+    setOutputMuted(next);
+    try {
+      conversation.setVolume({ volume: next ? 0 : 1 });
+    } catch {
+      /* no-op before a live session */
+    }
   };
 
   const endSession = () => {
-    if (conversation.status === "connected") conversation.endSession();
+    if (connected) conversation.endSession();
     setTranscript([]);
+    setRecording(false);
+    stopMeter();
     setNotice("Session ended · local transcript cleared");
-    dispatchOrb("idle");
   };
 
   return (
     <div className="agent-console">
       <div className="agent-identity">
-        <div
-          className={`agent-orb mode-${conversation.isSpeaking ? "speaking" : conversation.status === "connected" ? "listening" : "idle"}`}
-          aria-hidden="true"
-        >
+        <div className={`agent-orb mode-${orbState}`} aria-hidden="true">
           <span>ZN</span>
         </div>
         <div>
@@ -325,8 +409,9 @@ function AgentInterface({
           <h2>Meet Digital Zerun.</h2>
           <p>
             I’m Digital Zerun, an AI representation using Zerun’s authorised
-            cloned voice. I answer only from a screened public knowledge file
-            and cannot make commitments on Zerun’s behalf.
+            cloned voice. Type a question or record one — replies come back
+            spoken and written. I answer only from a screened public knowledge
+            file and cannot make commitments on Zerun’s behalf.
           </p>
         </div>
       </div>
@@ -335,20 +420,6 @@ function AgentInterface({
           <span className="status-dot"></span>
           <span>{notice}</span>
           <span>zero retention target</span>
-        </div>
-        <div className="mode-switch" aria-label="Conversation mode">
-          <button
-            className={mode === "text" ? "is-active" : ""}
-            onClick={() => setMode("text")}
-          >
-            Text
-          </button>
-          <button
-            className={mode === "voice" ? "is-active" : ""}
-            onClick={() => setMode("voice")}
-          >
-            Voice
-          </button>
         </div>
         <div className="transcript" aria-live="polite">
           {transcript.length === 0 ? (
@@ -378,37 +449,74 @@ function AgentInterface({
             ))
           )}
         </div>
-        {mode === "voice" && (
+
+        {configured && !connected && (
           <label className="consent">
             <input
               type="checkbox"
               checked={consent}
               onChange={(event) => setConsent(event.target.checked)}
             />{" "}
-            I understand that microphone access starts only for this session and
-            the AI voice is a clone.
+            I understand Digital Zerun uses an AI clone of Zerun’s voice, and
+            that starting a session asks for microphone permission once (the mic
+            stays off until I tap record).
           </label>
         )}
+
         <div className="agent-input">
           <input
             value={input}
             onChange={(event) => setInput(event.target.value)}
             onKeyDown={(event) => event.key === "Enter" && sendText()}
-            placeholder={
-              mode === "text"
-                ? "Ask about research, projects, or experience…"
-                : "Voice session uses your microphone after consent"
-            }
-            disabled={mode === "voice"}
+            placeholder="Ask about research, projects, or experience…"
           />
-          {mode === "text" && <button onClick={sendText}>Send</button>}
-          {configured && conversation.status === "disconnected" && (
+          <button onClick={sendText} disabled={!input.trim()}>
+            Send
+          </button>
+        </div>
+
+        {connected && (
+          <div className="agent-voice-row">
+            <button
+              className={`record ${recording ? "is-live" : ""}`}
+              onClick={toggleRecording}
+              disabled={micBlocked}
+              aria-pressed={recording}
+            >
+              {micBlocked
+                ? "Microphone blocked"
+                : recording
+                  ? "■ Stop & send"
+                  : "● Record a question"}
+            </button>
+            {recording && (
+              <span
+                className="mic-meter"
+                style={{ "--level": level } as CSSProperties}
+                aria-hidden="true"
+              />
+            )}
+            <button
+              className="output-toggle"
+              onClick={toggleOutput}
+              aria-pressed={outputMuted}
+            >
+              {outputMuted ? "🔇 Replies muted" : "🔊 Replies on"}
+            </button>
+            <button className="end" onClick={endSession}>
+              End & clear
+            </button>
+          </div>
+        )}
+
+        {configured && !connected && (
+          <div className="agent-input">
             <button
               className="connect"
               disabled={
                 loadingRuntime ||
                 starting ||
-                (runtimeReady && mode === "voice" && !consent)
+                (runtimeReady && !consent)
               }
               onClick={runtimeReady ? startSession : onActivate}
             >
@@ -417,16 +525,12 @@ function AgentInterface({
                 : starting
                   ? "Verifying…"
                   : runtimeReady
-                    ? `Start ${mode} session`
+                    ? "Start Digital Zerun"
                     : "Activate private agent"}
             </button>
-          )}
-          {conversation.status === "connected" && (
-            <button className="end" onClick={endSession}>
-              End & clear
-            </button>
-          )}
-        </div>
+          </div>
+        )}
+
         {!configured && (
           <p className="agent-fallback">
             Voice activation awaits the owner’s Cloudflare and ElevenLabs

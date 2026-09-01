@@ -52,7 +52,17 @@
 }
 .agent-orb.mode-speaking {
   animation: agent-talk 0.7s ease-in-out infinite alternate;
-  filter: hue-rotate(135deg);
+}
+.agent-orb.mode-thinking {
+  animation: agent-talk 1.6s ease-in-out infinite alternate;
+}
+.agent-orb.mode-recording {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--danger) 22%, transparent);
+  animation: agent-talk 0.9s ease-in-out infinite alternate;
+}
+.agent-orb.mode-recording::after {
+  border-color: color-mix(in srgb, var(--danger) 55%, transparent);
 }
 @keyframes agent-talk {
   to {
@@ -100,24 +110,66 @@
     monospace;
   text-transform: uppercase;
 }
-.mode-switch {
-  display: inline-flex;
-  margin: 1rem 0;
-  padding: 0.2rem;
-  border: 1px solid var(--line);
-  border-radius: 9px;
+.agent-voice-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem;
+  margin-top: 0.6rem;
 }
-.mode-switch button {
-  border: 0;
-  border-radius: 7px;
-  padding: 0.45rem 0.8rem;
-  background: transparent;
-  color: var(--muted);
+.agent-voice-row button {
+  border: 1px solid var(--line-strong);
+  border-radius: 9px;
+  padding: 0.5rem 0.85rem;
+  background: var(--panel-solid);
+  color: var(--text);
+  font:
+    0.72rem/1 "Geist Mono Variable",
+    monospace;
   cursor: pointer;
 }
-.mode-switch button.is-active {
-  background: color-mix(in srgb, var(--cyan) 12%, transparent);
-  color: var(--cyan);
+.agent-voice-row button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.agent-voice-row .record {
+  border-color: color-mix(in srgb, var(--cyan) 55%, var(--line-strong));
+  color: var(--cyan-soft);
+}
+.agent-voice-row .record.is-live {
+  border-color: var(--danger);
+  color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 10%, transparent);
+  animation: agent-rec 1s step-start infinite;
+}
+@keyframes agent-rec {
+  50% {
+    border-color: color-mix(in srgb, var(--danger) 45%, transparent);
+  }
+}
+.agent-voice-row .output-toggle {
+  margin-left: auto;
+}
+.agent-voice-row .end {
+  border-color: color-mix(in srgb, var(--danger) 50%, transparent);
+  color: var(--danger);
+  background: transparent;
+}
+.mic-meter {
+  flex: 1 1 4rem;
+  min-width: 3rem;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--line);
+  overflow: hidden;
+}
+.mic-meter::after {
+  content: "";
+  display: block;
+  height: 100%;
+  width: calc(clamp(0, var(--level, 0), 1) * 100%);
+  background: var(--danger);
+  transition: width 80ms linear;
 }
 .transcript {
   min-height: 14.5rem;
@@ -188,14 +240,24 @@
   color: var(--cyan);
   cursor: pointer;
 }
-.agent-input .end {
-  border-color: color-mix(in srgb, var(--danger) 50%, transparent);
-  color: var(--danger);
-  background: transparent;
-}
 .agent-input button:disabled {
   opacity: 0.45;
   cursor: not-allowed;
+}
+.agent-input .connect {
+  width: 100%;
+  padding: 0.7rem;
+  border-color: color-mix(in srgb, var(--cyan) 60%, transparent);
+  background: var(--cyan);
+  color: #fff;
+}
+:root[data-theme="dark"] .agent-input .connect {
+  color: #0b0d11;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .agent-input .connect {
+    color: #0b0d11;
+  }
 }
 .agent-fallback {
   margin: 0.8rem 0 0;
