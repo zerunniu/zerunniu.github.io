@@ -14,9 +14,6 @@ export const allowedProjects = new Set([
   "wasecom",
   "fedeq",
   "dual-group-website",
-  "fedylora",
-  "ai-study-assistant",
-  "vit-jscc",
 ]);
 export const allowedEvidence = new Set([
   "brave-metrics",

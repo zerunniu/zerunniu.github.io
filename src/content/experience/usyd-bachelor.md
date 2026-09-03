@@ -1,5 +1,5 @@
 ---
-role: Bachelor of Advanced Computing, Data Science
+role: Bachelor of Advanced Computing, Major in Data Science
 organisation: The University of Sydney
 start: "2021"
 end: "2025"

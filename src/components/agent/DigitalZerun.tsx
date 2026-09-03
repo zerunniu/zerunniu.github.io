@@ -46,6 +46,65 @@ const fallbackAnswers = [
       "Zerun works on reliable and efficient AI systems, including federated learning, semantic communication, calibration, distributed optimisation, and resource-constrained ML.",
   },
   {
+    keys: [
+      "available",
+      "availability",
+      "start",
+      "hiring",
+      "hire",
+      "role",
+      "job",
+      "position",
+      "opportunit",
+      "remote",
+      "hybrid",
+      "relocate",
+      "notice",
+      "looking for",
+      "english",
+      "mandarin",
+      "chinese",
+      "speak",
+    ],
+    answer:
+      "Zerun is based in Sydney and eligible to work in Australia, and is open to AI-focused roles across research and engineering — AI Research Engineer, Research or Applied Scientist, ML Engineer, LLM/GenAI Engineer, AI Agent Engineer, or research-assistant / PhD-track positions — in industry, research labs, or startups. Available for full-time work immediately. On-site, hybrid, or remote in Sydney; remote or hybrid elsewhere in Australia. Languages: fluent English and Mandarin Chinese.",
+  },
+  {
+    keys: [
+      "link",
+      "github",
+      "scholar",
+      "linkedin",
+      "cv",
+      "resume",
+      "profile",
+      "contact",
+      "email",
+    ],
+    answer:
+      "GitHub: github.com/zerunniu · LinkedIn: linkedin.com/in/zerun-niu-265015300 · Google Scholar: scholar.google.com/citations?user=2dTScwcAAAAJ · Email: zerun.niu@sydney.edu.au. The industry resume and academic CV PDFs are linked in the site footer.",
+  },
+  {
+    keys: ["supervisor", "advisor", "supervised", "tran", "dual group"],
+    answer:
+      "Zerun's Master of Philosophy (Engineering), AI specialisation, at the University of Sydney is supervised by Prof. Nguyen Tran in the DUAL Group, and is nearing completion. Zerun also holds a Bachelor of Advanced Computing (Major in Data Science) from the University of Sydney, graduated with Distinction.",
+  },
+  {
+    keys: [
+      "skill",
+      "stack",
+      "tools",
+      "tech",
+      "framework",
+      "pytorch",
+      "rag",
+      "agent",
+      "llm",
+    ],
+    answer:
+      "Zerun's core skills: research methods (algorithm design, experimental design, ablations, calibration, robustness evaluation); ML engineering (Python, PyTorch, Hugging Face, reproducible pipelines, experiment tracking); distributed systems (federated learning, Ray, Dask, Spark, Airflow, FastAPI); GenAI (LLM and VLM orchestration, RAG, agents, LoRA and PEFT, evaluation, safety guardrails); and research tooling (TypeScript, React, Astro, GitHub Actions, data visualisation).",
+  },
+  {
     keys: ["teaching", "unsw", "usyd"],
     answer:
       "Zerun is currently a Casual Academic Tutor at the University of Sydney and a Casual Academic at UNSW Sydney.",
@@ -338,7 +397,7 @@ function AgentInterface({
     );
     const answer =
       match?.answer ??
-      "I do not have reliable information for that question. Please use the project pages, publications, CV, or contact Zerun directly.";
+      "I do not have reliable information for that question. Please use the research and publication links on this page, or contact Zerun directly.";
     setTranscript((items) =>
       [
         ...items,
