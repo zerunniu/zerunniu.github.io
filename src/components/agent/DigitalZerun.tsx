@@ -481,45 +481,83 @@ function AgentInterface({
           <span>zero retention target</span>
         </div>
         <div className="transcript" aria-live="polite">
-          {transcript.length === 0 ? (
-            <div className="starter-prompts">
-              <button
-                onClick={() => setInput("What did Zerun contribute to BRAVE?")}
-              >
-                What did Zerun contribute to BRAVE?
-              </button>
-              <button
-                onClick={() => setInput("What research roles does Zerun hold?")}
-              >
-                What research roles does Zerun hold?
-              </button>
-              <button
-                onClick={() => setInput("Explain WaSeCom in one minute.")}
-              >
-                Explain WaSeCom in one minute.
-              </button>
-            </div>
-          ) : (
+          {transcript.length > 0 ? (
             transcript.map((line, index) => (
               <p className={line.role} key={`${line.role}-${index}`}>
                 <span>{line.role === "agent" ? "Digital Zerun" : "You"}</span>
                 {line.message}
               </p>
             ))
+          ) : connected ? (
+            <p className="transcript-hint">
+              You’re connected. Type a question below, or tap{" "}
+              <strong>● Record a question</strong>, speak, and tap again to send.
+            </p>
+          ) : (
+            <ol className="agent-howto">
+              <li>
+                <span aria-hidden="true">1</span>
+                <div>
+                  <strong>Pass the human check.</strong> After you press Start, a
+                  quick Cloudflare “are you human?” prompt appears — usually with
+                  no puzzle.
+                </div>
+              </li>
+              <li>
+                <span aria-hidden="true">2</span>
+                <div>
+                  <strong>Allow the microphone</strong> when your browser asks.
+                  It stays muted until you tap Record.
+                </div>
+              </li>
+              <li>
+                <span aria-hidden="true">3</span>
+                <div>
+                  <strong>Start talking.</strong> Type a question, or tap{" "}
+                  <strong>● Record</strong> → speak → tap again to send. Replies
+                  come back spoken and written.
+                </div>
+              </li>
+            </ol>
           )}
         </div>
 
         {configured && !connected && (
-          <label className="consent">
-            <input
-              type="checkbox"
-              checked={consent}
-              onChange={(event) => setConsent(event.target.checked)}
-            />{" "}
-            I understand Digital Zerun uses an AI clone of Zerun’s voice, and
-            that starting a session asks for microphone permission once (the mic
-            stays off until I tap record).
-          </label>
+          <div className="agent-start">
+            <label className="consent">
+              <input
+                type="checkbox"
+                checked={consent}
+                onChange={(event) => setConsent(event.target.checked)}
+              />
+              <span>
+                I understand Digital Zerun uses an AI clone of Zerun’s voice, and
+                that starting a session asks for microphone permission once (the
+                mic stays off until I tap record).
+              </span>
+            </label>
+            <button
+              className="connect"
+              disabled={
+                loadingRuntime || starting || (runtimeReady && !consent)
+              }
+              onClick={runtimeReady ? startSession : onActivate}
+            >
+              {loadingRuntime
+                ? "Loading private runtime…"
+                : starting
+                  ? "Verifying…"
+                  : runtimeReady
+                    ? "Start Digital Zerun"
+                    : "Activate private agent"}
+            </button>
+          </div>
+        )}
+
+        {configured && !connected && (
+          <div className="agent-or" aria-hidden="true">
+            <span>or type a quick question</span>
+          </div>
         )}
 
         <div className="agent-input">
@@ -527,7 +565,11 @@ function AgentInterface({
             value={input}
             onChange={(event) => setInput(event.target.value)}
             onKeyDown={(event) => event.key === "Enter" && sendText()}
-            placeholder="Ask about research, projects, or experience…"
+            placeholder={
+              connected
+                ? "Ask about research, projects, or experience…"
+                : "Ask a quick question from the public knowledge file…"
+            }
           />
           <button onClick={sendText} disabled={!input.trim()}>
             Send
@@ -564,28 +606,6 @@ function AgentInterface({
             </button>
             <button className="end" onClick={endSession}>
               End & clear
-            </button>
-          </div>
-        )}
-
-        {configured && !connected && (
-          <div className="agent-input">
-            <button
-              className="connect"
-              disabled={
-                loadingRuntime ||
-                starting ||
-                (runtimeReady && !consent)
-              }
-              onClick={runtimeReady ? startSession : onActivate}
-            >
-              {loadingRuntime
-                ? "Loading private runtime…"
-                : starting
-                  ? "Verifying…"
-                  : runtimeReady
-                    ? "Start Digital Zerun"
-                    : "Activate private agent"}
             </button>
           </div>
         )}
