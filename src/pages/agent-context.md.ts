@@ -68,6 +68,7 @@ export async function GET() {
     ...profile.socials.map((social) => `- ${social.label}: ${social.url}`),
     "- Industry resume (PDF): https://zerunniu.github.io/assets/Zerun_Niu_Research_Engineer_Resume.pdf",
     "- Academic CV (PDF): https://zerunniu.github.io/assets/Zerun_Niu_Academic_CV.pdf",
+    "- BRAVE deep-dive (full write-up and an interactive calibration demo): https://zerunniu.github.io/projects/brave",
     "",
     "## BRAVE facts that must remain exact",
     "- Zerun Niu is first author.",

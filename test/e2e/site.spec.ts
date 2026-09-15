@@ -12,6 +12,9 @@ test("home leads with the name, title, and first-author research", async ({
     page.getByRole("heading", { name: /BRAVE:/ }).first(),
   ).toBeVisible();
   await expect(page.getByText(/first author/i).first()).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: /BRAVE:/ }).first(),
+  ).toHaveAttribute("href", "/projects/brave");
 });
 
 test("primary navigation is in-page anchors", async ({ page }, testInfo) => {
@@ -24,7 +27,7 @@ test("primary navigation is in-page anchors", async ({ page }, testInfo) => {
   await research.click();
   await expect(page).toHaveURL(/#research$/);
   await expect(
-    page.getByRole("heading", { name: /Systems built to answer/ }),
+    page.getByRole("heading", { name: /Reliability, under real constraints/ }),
   ).toBeVisible();
 });
 
@@ -59,11 +62,31 @@ test("reduced motion still reveals every section", async ({ page }) => {
     page.getByRole("heading", { level: 1, name: "Zerun Niu" }),
   ).toBeVisible();
   await expect(
-    page.getByRole("heading", { name: /Evidence, status, provenance/ }),
+    page.getByRole("heading", { name: /Systems in production/ }),
   ).toBeVisible();
   await expect(
     page.getByRole("heading", { name: /Research practice/ }),
   ).toBeVisible();
+});
+
+test("BRAVE deep-dive page carries the write-up and the calibration demo", async ({
+  page,
+}) => {
+  await page.goto("/projects/brave");
+  await expect(
+    page.getByRole("heading", { level: 1, name: /BRAVE:/ }),
+  ).toBeVisible();
+  await expect(page.getByText(/illusory evidence accumulation/i)).toBeVisible();
+  await expect(page.getByText(/under review at TMLR/i)).toBeVisible();
+
+  const readout = page.locator("#bc-sparsity-readout");
+  const before = await readout.textContent();
+  await page.locator("#bc-sparsity").fill("90");
+  await expect(readout).not.toHaveText(before ?? "");
+  await expect(page.locator("#bc-read")).toContainText("annotators/item");
+
+  await page.getByRole("link", { name: /Back to Research/ }).click();
+  await expect(page).toHaveURL(/#p-brave$/);
 });
 
 test("mobile renders primary content without horizontal overflow", async ({

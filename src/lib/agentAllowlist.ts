@@ -1,10 +1,12 @@
-// The site is a single page plus /privacy. Client tools may only resolve to
-// these exact routes / in-page anchors.
+// The site is a single page plus /privacy and one project deep-dive
+// (/projects/brave). Client tools may only resolve to these exact routes /
+// in-page anchors.
 export const allowedPaths = new Set([
   "/",
   "/privacy",
+  "/projects/brave",
   "/#research",
-  "/#publications",
+  "/#systems",
   "/#experience",
   "/#digital-zerun",
   "/#contact",
@@ -33,7 +35,9 @@ export const allowedTags = new Set([
 export const allowedResume = new Set(["industry", "academic"]);
 
 export function projectPath(slug: string) {
-  return allowedProjects.has(slug) ? `/#p-${slug}` : null;
+  if (!allowedProjects.has(slug)) return null;
+  // BRAVE has its own deep-dive page; the rest scroll to their homepage card.
+  return slug === "brave" ? "/projects/brave" : `/#p-${slug}`;
 }
 
 export function researchFilterPath(tag: string) {

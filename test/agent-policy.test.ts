@@ -46,7 +46,8 @@ describe("client tool allowlists", () => {
   it("accepts exact local routes and in-page anchors", () => {
     expect(allowedPaths.has("/")).toBe(true);
     expect(allowedPaths.has("/privacy")).toBe(true);
-    expect(allowedPaths.has("/#publications")).toBe(true);
+    expect(allowedPaths.has("/projects/brave")).toBe(true);
+    expect(allowedPaths.has("/#systems")).toBe(true);
   });
   it("rejects arbitrary URLs and traversal", () => {
     for (const value of [
@@ -60,7 +61,8 @@ describe("client tool allowlists", () => {
       expect(allowedPaths.has(value)).toBe(false);
   });
   it("accepts only known project slugs", () => {
-    expect(projectPath("brave")).toBe("/#p-brave");
+    expect(projectPath("brave")).toBe("/projects/brave");
+    expect(projectPath("wasecom")).toBe("/#p-wasecom");
     expect(projectPath("../../privacy")).toBeNull();
   });
   it("accepts only known tags and resume variants", () => {

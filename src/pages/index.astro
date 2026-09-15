@@ -12,9 +12,14 @@ const projects = (await getCollection("projects")).sort(
 );
 const featured = projects.filter((project) => project.data.featured);
 
-const publications = (await getCollection("publications"))
-  .filter((paper) => paper.data.selected)
-  .sort((a, b) => b.data.year - a.data.year);
+const publications = (await getCollection("publications")).filter(
+  (paper) => paper.data.selected,
+);
+const pubByProject: Record<string, (typeof publications)[number]["data"]> =
+  {};
+for (const paper of publications) {
+  if (paper.data.project) pubByProject[paper.data.project.id] = paper.data;
+}
 
 const experiences = (await getCollection("experience")).sort(
   (a, b) => a.data.order - b.data.order,
@@ -116,115 +121,136 @@ const personJsonLd = {
   <section class="section-shell" id="research">
     <div class="section-heading reveal">
       <div>
-        <span class="eyebrow">Selected research</span>
-        <h2>Systems built to answer hard questions.</h2>
+        <span class="eyebrow">Research &amp; Projects</span>
+        <h2>Reliability, under real constraints.</h2>
       </div>
       <p>
-        Each case states the problem, my role, the evidence, and the public
-        artifact. Statuses are exact: published, submitted, or under review.
+        BRAVE, WaSeCom, and FeDEQ each ask what reliable means when evidence,
+        bandwidth, or compute is scarce. The DUAL Group site is the interface
+        that carries that work to the public.
       </p>
     </div>
     <div class="cards">
       {
-        featured.map((project, index) => (
-          <article
-            class="card reveal"
-            id={`p-${project.id}`}
-            style={`--i: ${index}`}
-          >
-            <div class="card-top">
-              <span class={`tag ${statusClass[project.data.status] ?? ""}`}>
-                {statusLabel[project.data.status] ?? project.data.status}
-              </span>
-              <span class="card-key">
-                {project.data.shortTitle} · {project.data.period}
-              </span>
-            </div>
-            <h3>{project.data.title}</h3>
-            <p>{project.data.summary}</p>
-            <p class="role" id={project.id === "brave" ? "brave-mechanism" : undefined}>
-              {project.data.role}
-            </p>
-            <div class="card-foot" id={evidenceId[project.id]}>
-              {project.data.metrics[0] && (
-                <span class="metric">
-                  {project.data.metrics[0].value} {project.data.metrics[0].label}
+        featured.map((project, index) => {
+          const pub = pubByProject[project.id];
+          return (
+            <article
+              class="card reveal"
+              id={`p-${project.id}`}
+              style={`--i: ${index}`}
+            >
+              <div class="card-top">
+                <span class={`tag ${statusClass[project.data.status] ?? ""}`}>
+                  {statusLabel[project.data.status] ?? project.data.status}
                 </span>
+                <span class="card-key">
+                  {project.data.shortTitle} · {project.data.period}
+                </span>
+              </div>
+              <h3>
+                {project.id === "brave" ? (
+                  <a href="/projects/brave">{project.data.title}</a>
+                ) : (
+                  project.data.title
+                )}
+              </h3>
+              <p>{project.data.summary}</p>
+              <p
+                class="role"
+                id={project.id === "brave" ? "brave-mechanism" : undefined}
+              >
+                {project.data.role}
+              </p>
+              {pub && (
+                <p class={`venue ${pub.status === "under-review" ? "is-review" : ""}`}>
+                  {pub.venue}
+                  {pub.status === "under-review" && " · under review"}
+                  {pub.doi && (
+                    <>
+                      {" · "}
+                      <a
+                        href={`https://doi.org/${pub.doi}`}
+                        rel="noopener"
+                        target="_blank"
+                      >
+                        DOI ↗
+                      </a>
+                    </>
+                  )}
+                </p>
               )}
-              {project.data.links.map((link) => (
-                <a href={link.url} rel="noopener" target="_blank">
-                  {link.label} ↗
-                </a>
-              ))}
-            </div>
-          </article>
-        ))
+              <div class="card-foot" id={evidenceId[project.id]}>
+                {project.data.metrics[0] && (
+                  <span class="metric">
+                    {project.data.metrics[0].value}{" "}
+                    {project.data.metrics[0].label}
+                  </span>
+                )}
+                {project.data.links.map((link) => (
+                  <a href={link.url} rel="noopener" target="_blank">
+                    {link.label} ↗
+                  </a>
+                ))}
+                {project.id === "brave" && (
+                  <a href="/projects/brave" class="deep-dive">
+                    Explore the mechanism →
+                  </a>
+                )}
+              </div>
+            </article>
+          );
+        })
       }
     </div>
   </section>
 
   <div class="rule"></div>
 
-  <section class="section-shell" id="publications">
+  <section class="section-shell" id="systems">
     <div class="section-heading reveal">
       <div>
-        <span class="eyebrow">Publications</span>
-        <h2>Evidence, status, provenance.</h2>
+        <span class="eyebrow">Shipped, not just published</span>
+        <h2>Systems in production.</h2>
       </div>
-      <p>
-        Every listing uses a precise status. BRAVE is first-author work under
-        review at TMLR; WaSeCom is published in IEEE JSAC.
-      </p>
+      <p>What's actually running right now, beyond the papers above.</p>
     </div>
-    <div class="pubs">
-      {
-        publications.map((paper, index) => (
-          <div class="pub reveal" style={`--i: ${index}`}>
-            <span class="yr">{paper.data.year}</span>
-            <div>
-              <h3>{paper.data.title}</h3>
-              <p class="authors">
-                {paper.data.authors.map((name, i) => (
-                  <>
-                    {i > 0 && ", "}
-                    {name === "Zerun Niu" ? <strong>{name}</strong> : name}
-                  </>
-                ))}
-                {" · "}
-                <span class="venue">{paper.data.venue}</span>
-              </p>
-            </div>
-            <div class="side">
-              <span class={paper.data.status === "under-review" ? "is-review" : ""}>
-                {statusLabel[paper.data.status] ?? paper.data.status}
-              </span>
-              {paper.data.openreview && (
-                <a href={paper.data.openreview} rel="noopener" target="_blank">
-                  OpenReview ↗
-                </a>
-              )}
-              {paper.data.doi && (
-                <a
-                  href={`https://doi.org/${paper.data.doi}`}
-                  rel="noopener"
-                  target="_blank"
-                >
-                  DOI ↗
-                </a>
-              )}
-              {paper.data.arxiv && (
-                <a
-                  href={`https://arxiv.org/abs/${paper.data.arxiv}`}
-                  rel="noopener"
-                  target="_blank"
-                >
-                  arXiv ↗
-                </a>
-              )}
-            </div>
-          </div>
-        ))
-      }
+    <div class="systems">
+      <article class="sys-card reveal" style="--i: 0">
+        <span class="kind">This website</span>
+        <h3>zerunniu.github.io</h3>
+        <p>
+          Astro on a static build, a Cloudflare Worker backend, and a CI
+          pipeline that type-checks, tests, verifies links, and deploys on
+          every push.
+        </p>
+        <a
+          href="https://github.com/zerunniu/zerunniu.github.io"
+          rel="noopener"
+          target="_blank">Source ↗</a
+        >
+      </article>
+      <article class="sys-card reveal" style="--i: 1">
+        <span class="kind">Voice + text agent</span>
+        <h3>Digital Zerun</h3>
+        <p>
+          Turn-based agent living on this page: Turnstile-verified sessions,
+          rate limiting, a screened knowledge boundary, and a 40-case eval
+          suite.
+        </p>
+        <a href="#digital-zerun">Meet Digital Zerun ↓</a>
+      </article>
+      <article class="sys-card reveal" style="--i: 2">
+        <span class="kind">Group infrastructure</span>
+        <h3>DUAL Group website</h3>
+        <p>
+          Designed, built, and maintained end to end for the DUAL Group's
+          public research presence at the University of Sydney.
+        </p>
+        <a href="https://dual-grp.github.io/" rel="noopener" target="_blank"
+          >Live site ↗</a
+        >
+      </article>
     </div>
   </section>
 
@@ -303,7 +329,7 @@ const personJsonLd = {
     height: auto;
     aspect-ratio: 4 / 5;
     object-fit: cover;
-    object-position: 50% 12%;
+    object-position: 50% 50%;
     border-radius: 14px;
     border: 1px solid var(--line-strong);
     box-shadow: var(--shadow-sm);
@@ -450,6 +476,38 @@ const personJsonLd = {
     font: 400 0.7rem/1.6 var(--font-mono);
     color: var(--text);
   }
+  .card .venue {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font: 400 0.68rem/1.5 var(--font-mono);
+    color: var(--cyan-soft);
+  }
+  .card .venue::before {
+    content: "";
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: currentColor;
+    flex: none;
+  }
+  .card .venue.is-review {
+    color: var(--orange);
+  }
+  .card .venue a {
+    color: inherit;
+  }
+  .card .venue a:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .card h3 a {
+    color: inherit;
+  }
+  .card h3 a:hover {
+    color: var(--cyan-soft);
+  }
   .card-foot {
     margin-top: auto;
     padding-top: 0.6rem;
@@ -471,74 +529,56 @@ const personJsonLd = {
     text-decoration: underline;
     text-underline-offset: 3px;
   }
+  .card-foot .deep-dive {
+    font-weight: 500;
+  }
   @media (max-width: 720px) {
     .cards {
       grid-template-columns: 1fr;
     }
   }
 
-  /* ---- publications ---- */
-  .pubs {
-    border-top: 1px solid var(--line);
-  }
-  .pub {
+  /* ---- systems in production ---- */
+  .systems {
     display: grid;
-    grid-template-columns: 4rem 1fr auto;
-    gap: 1.2rem;
-    align-items: start;
-    padding: 1.3rem 0.4rem;
-    border-bottom: 1px solid var(--line);
-    transition:
-      background 0.18s ease,
-      padding-left 0.18s ease;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
   }
-  .pub:hover {
-    background: var(--panel);
-    padding-left: 0.9rem;
-  }
-  .pub .yr {
-    font: 400 0.82rem/1.6 var(--font-mono);
-    color: var(--faint);
-    font-variant-numeric: tabular-nums;
-  }
-  .pub h3 {
-    font-size: 1.02rem;
-    line-height: 1.3;
-  }
-  .pub .authors {
-    margin: 0.4rem 0 0;
-    font: 400 0.7rem/1.5 var(--font-mono);
-    color: var(--muted);
-  }
-  .pub .venue {
-    color: var(--text);
-  }
-  .pub .side {
+  .sys-card {
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
-    gap: 0.5rem;
-    font: 400 0.68rem/1 var(--font-mono);
+    gap: 0.6rem;
+    padding: 1.4rem;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--panel-solid);
   }
-  .pub .side .is-review {
-    color: var(--orange);
-  }
-  .pub .side a {
+  .sys-card .kind {
+    font: 500 0.62rem/1 var(--font-mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
     color: var(--cyan-soft);
   }
-  .pub .side a:hover {
+  .sys-card h3 {
+    font-size: 1.05rem;
+  }
+  .sys-card p {
+    margin: 0;
+    flex: 1;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  .sys-card a {
+    font: 400 0.72rem/1 var(--font-mono);
+    color: var(--cyan-soft);
+  }
+  .sys-card a:hover {
     text-decoration: underline;
     text-underline-offset: 3px;
   }
-  @media (max-width: 720px) {
-    .pub {
-      grid-template-columns: 3rem 1fr;
-    }
-    .pub .side {
-      grid-column: 2;
-      align-items: flex-start;
-      flex-flow: row wrap;
-      gap: 0.8rem;
+  @media (max-width: 820px) {
+    .systems {
+      grid-template-columns: 1fr;
     }
   }
 

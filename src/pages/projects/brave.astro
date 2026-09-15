@@ -1,0 +1,164 @@
+---
+import { getCollection, getEntry, render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import BraveCalibration from "../../components/BraveCalibration.astro";
+
+const projectEntry = await getEntry("projects", "brave");
+if (!projectEntry) throw new Error("BRAVE project entry is missing");
+const project = projectEntry.data;
+const { Content } = await render(projectEntry);
+
+const publicationEntry = (await getCollection("publications")).find(
+  (paper) => paper.data.project?.id === "brave",
+);
+const publication = publicationEntry?.data;
+
+const statusLabel: Record<string, string> = {
+  "under-review": "Under review",
+  submitted: "Submitted",
+  published: "Published",
+};
+---
+
+<BaseLayout
+  title="BRAVE"
+  description="How BRAVE keeps sparse-crowdsourcing label aggregation calibrated: the reliability failure it fixes, the controlled evidence feedback mechanism, and an interactive rebuild of the calibration effect."
+>
+  <article class="page-shell brave-page" data-pagefind-body>
+    <a class="back" href="/#p-brave">&larr; Back to Research &amp; Projects</a>
+    <span class="eyebrow">Research &middot; BRAVE</span>
+    <h1>{project.title}</h1>
+    <p class="lede">{project.summary}</p>
+
+    <div class="meta-row">
+      <span class="tag is-review">
+        {statusLabel[project.status] ?? project.status}
+      </span>
+      {publication && <span>{publication.venue}</span>}
+      <span>{project.period}</span>
+    </div>
+    <p class="role">{project.role}</p>
+
+    <div class="metric-strip">
+      {
+        project.metrics.map((metric) => (
+          <div class="metric">
+            <b>{metric.value}</b>
+            <span>{metric.label}</span>
+          </div>
+        ))
+      }
+    </div>
+
+    <div class="links-row">
+      {
+        project.links.map((link) => (
+          <a href={link.url} rel="noopener" target="_blank">
+            {link.label} &#8599;
+          </a>
+        ))
+      }
+      <a href="/privacy">Voice &amp; data policy &#8599;</a>
+    </div>
+
+    <BraveCalibration />
+
+    <div class="prose">
+      <Content />
+    </div>
+
+    <div class="page-end">
+      <a class="button-secondary" href="/#research">&larr; All research &amp; projects</a>
+      <a class="button-primary" href="/#digital-zerun">Ask Digital Zerun about BRAVE &rarr;</a>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .brave-page {
+    max-width: 74ch;
+  }
+  .back {
+    display: inline-block;
+    margin-bottom: 1.5rem;
+    font: 400 0.76rem/1 var(--font-mono);
+    color: var(--muted);
+  }
+  .back:hover {
+    color: var(--cyan-soft);
+  }
+  .brave-page h1 {
+    margin: 0.8rem 0 1rem;
+    font-size: clamp(1.9rem, 4vw, 2.9rem);
+    max-width: 22ch;
+  }
+  .meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.7rem;
+    margin: 1.4rem 0 0.8rem;
+    font: 400 0.76rem/1 var(--font-mono);
+    color: var(--muted);
+  }
+  .meta-row .tag {
+    font: 400 0.62rem/1 var(--font-mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.28rem 0.5rem;
+    border-radius: 6px;
+    border: 1px solid var(--line-strong);
+    color: var(--orange);
+    border-color: color-mix(in srgb, var(--orange) 45%, var(--line-strong));
+    background: color-mix(in srgb, var(--orange) 8%, transparent);
+  }
+  .role {
+    max-width: 60ch;
+    font: 400 0.85rem/1.6 var(--font-mono);
+    color: var(--text);
+  }
+  .metric-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    gap: 0.8rem;
+    margin: 1.6rem 0;
+    padding: 1.1rem 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .metric-strip .metric {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+  .metric-strip b {
+    font-size: 1.25rem;
+    font-family: var(--font-display);
+  }
+  .metric-strip span {
+    font: 400 0.68rem/1.4 var(--font-mono);
+    color: var(--faint);
+  }
+  .links-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.1rem;
+    margin-bottom: 1rem;
+    font: 400 0.78rem/1 var(--font-mono);
+  }
+  .links-row a {
+    color: var(--cyan-soft);
+  }
+  .links-row a:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .page-end {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--line);
+  }
+</style>

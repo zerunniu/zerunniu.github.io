@@ -1,0 +1,310 @@
+---
+/**
+ * Illustrative rebuild of BRAVE's core mechanism: naive aggregation lets a
+ * label posterior recycle itself as evidence and grows falsely confident
+ * under sparse crowdsourcing, while BRAVE's controlled feedback stays
+ * calibrated. The curves are a stand-in for the mechanism's shape, tuned to
+ * stay consistent with BRAVE's reported ECE range — not the paper's
+ * per-item results.
+ */
+---
+
+<div class="brave-calibration">
+  <div class="bc-control">
+    <label for="bc-sparsity">Annotators per item</label>
+    <input type="range" id="bc-sparsity" min="0" max="100" value="35" />
+    <span class="bc-readout" id="bc-sparsity-readout">6 per item</span>
+  </div>
+  <div class="bc-panels">
+    <div class="bc-panel naive">
+      <h4>Naive aggregation</h4>
+      <small>posterior recycled as its own evidence</small>
+      <svg id="bc-svg-naive" viewBox="0 0 200 180" aria-hidden="true"></svg>
+      <div class="bc-stats">
+        <div class="bc-stat">
+          <span>Confident</span><b id="bc-naive-conf">–</b>
+        </div>
+        <div class="bc-stat">
+          <span>Correct</span><b id="bc-naive-acc">–</b>
+        </div>
+        <div class="bc-stat">
+          <span>ECE</span><b id="bc-naive-ece">–</b>
+        </div>
+      </div>
+    </div>
+    <div class="bc-panel brave">
+      <h4>BRAVE — controlled feedback</h4>
+      <small>block-local vs. global posterior, regulated</small>
+      <svg id="bc-svg-brave" viewBox="0 0 200 180" aria-hidden="true"></svg>
+      <div class="bc-stats">
+        <div class="bc-stat">
+          <span>Confident</span><b id="bc-brave-conf">–</b>
+        </div>
+        <div class="bc-stat">
+          <span>Correct</span><b id="bc-brave-acc">–</b>
+        </div>
+        <div class="bc-stat">
+          <span>ECE</span><b id="bc-brave-ece">–</b>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="bc-read" id="bc-read">&nbsp;</p>
+  <p class="bc-caption">
+    Dashed line = perfectly calibrated (confidence equals accuracy). Solid
+    curve = this run's calibration curve; the dot marks the average
+    operating point. This is a simplified simulation of the mechanism's
+    shape, not BRAVE's reported per-benchmark results — see the write-up
+    below for the actual evaluation.
+  </p>
+</div>
+
+<style>
+  .brave-calibration {
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: var(--panel-solid);
+    padding: 1.5rem 1.6rem 1.7rem;
+    box-shadow: var(--shadow);
+    margin: 2rem 0;
+  }
+  .bc-control {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    padding-bottom: 1.2rem;
+    margin-bottom: 1.3rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .bc-control label {
+    font: 500 0.68rem/1 var(--font-mono);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .bc-control input[type="range"] {
+    flex: 1;
+    min-width: 10rem;
+    accent-color: var(--cyan);
+  }
+  .bc-readout {
+    font: 500 0.78rem/1 var(--font-mono);
+    color: var(--text);
+    min-width: 8.5rem;
+    text-align: right;
+  }
+  .bc-panels {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.4rem;
+  }
+  .bc-panel h4 {
+    margin: 0 0 0.15rem;
+    font: 500 0.78rem/1.3 var(--font-mono);
+    letter-spacing: 0.01em;
+  }
+  .bc-panel.naive h4 {
+    color: var(--orange);
+  }
+  .bc-panel.brave h4 {
+    color: var(--cyan-soft);
+  }
+  .bc-panel small {
+    display: block;
+    color: var(--faint);
+    font: 400 0.66rem/1.5 var(--font-mono);
+    margin-bottom: 0.6rem;
+  }
+  .bc-panel svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .bc-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    margin-top: 0.7rem;
+  }
+  .bc-stat {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 0.45rem 0.5rem;
+    text-align: center;
+  }
+  .bc-stat span {
+    display: block;
+    font: 400 0.58rem/1.3 var(--font-mono);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--faint);
+    margin-bottom: 0.2rem;
+  }
+  .bc-stat b {
+    font: 500 0.98rem/1 var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+  .bc-panel.naive .bc-stat b {
+    color: var(--orange);
+  }
+  .bc-panel.brave .bc-stat b {
+    color: var(--cyan-soft);
+  }
+  .bc-read {
+    margin: 1.3rem 0 0;
+    padding-top: 1.1rem;
+    border-top: 1px solid var(--line);
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+  .bc-read strong {
+    color: var(--text);
+  }
+  .bc-caption {
+    margin: 0.7rem 0 0;
+    font: 400 0.68rem/1.6 var(--font-mono);
+    color: var(--faint);
+  }
+  @media (max-width: 620px) {
+    .bc-panels {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  function sim(sparsity: number, brave: boolean) {
+    const bias = brave ? 0.03 + sparsity * 0.05 : 0.05 + sparsity * 0.34;
+    const accBase = brave ? 0.78 - sparsity * 0.06 : 0.75 - sparsity * 0.14;
+    const conf = Math.min(0.97, accBase + bias);
+    const ece = brave ? 0.025 + sparsity * 0.03 : 0.05 + sparsity * 0.23;
+    return { bias, acc: accBase, conf, ece };
+  }
+
+  function curvePoints(bias: number, w: number, h: number, pad: number) {
+    const pts: [number, number][] = [];
+    const N = 24;
+    for (let i = 0; i <= N; i++) {
+      const t = i / N;
+      const acc = Math.max(0, Math.min(1, t - bias * t * t));
+      const x = pad + t * (w - 2 * pad);
+      const y = h - pad - acc * (h - 2 * pad);
+      pts.push([x, y]);
+    }
+    return pts;
+  }
+
+  function pct(v: number) {
+    return Math.round(v * 100) + "%";
+  }
+
+  function drawPanel(svg: SVGSVGElement, bias: number, conf: number, acc: number, color: string) {
+    const w = 200,
+      h = 180,
+      pad = 22;
+    const pts = curvePoints(bias, w, h, pad);
+    const d =
+      "M " +
+      pts.map((p) => p[0].toFixed(1) + "," + p[1].toFixed(1)).join(" L ");
+    const dotX = pad + conf * (w - 2 * pad);
+    const dotY = h - pad - acc * (h - 2 * pad);
+
+    svg.innerHTML =
+      '<line x1="' +
+      pad +
+      '" y1="' +
+      (h - pad) +
+      '" x2="' +
+      (w - pad) +
+      '" y2="' +
+      pad +
+      '" stroke="var(--line-strong)" stroke-width="1" stroke-dasharray="3 3" />' +
+      '<path d="' +
+      d +
+      '" fill="none" stroke="' +
+      color +
+      '" stroke-width="2" />' +
+      '<circle cx="' +
+      dotX.toFixed(1) +
+      '" cy="' +
+      dotY.toFixed(1) +
+      '" r="4" fill="' +
+      color +
+      '" />' +
+      '<text x="' +
+      pad +
+      '" y="' +
+      (h - 6) +
+      '" font-size="8" fill="var(--faint)" font-family="var(--font-mono)">0%</text>' +
+      '<text x="' +
+      (w - pad) +
+      '" y="' +
+      (h - 6) +
+      '" font-size="8" fill="var(--faint)" text-anchor="end" font-family="var(--font-mono)">confidence 100%</text>' +
+      '<text x="' +
+      pad +
+      '" y="12" font-size="8" fill="var(--faint)" font-family="var(--font-mono)">accuracy 100%</text>';
+  }
+
+  const slider = document.getElementById("bc-sparsity") as HTMLInputElement | null;
+  const sparsityReadout = document.getElementById("bc-sparsity-readout");
+  const demoRead = document.getElementById("bc-read");
+  const svgNaive = document.getElementById("bc-svg-naive") as unknown as SVGSVGElement | null;
+  const svgBrave = document.getElementById("bc-svg-brave") as unknown as SVGSVGElement | null;
+
+  if (slider && sparsityReadout && demoRead && svgNaive && svgBrave) {
+    const render = () => {
+      const sparsity = Number(slider.value) / 100;
+      const annotators = Math.round(8 - sparsity * 6);
+      sparsityReadout.textContent = annotators + " per item";
+
+      const naive = sim(sparsity, false);
+      const brave = sim(sparsity, true);
+
+      const cssNaive =
+        getComputedStyle(document.documentElement)
+          .getPropertyValue("--orange")
+          .trim() || "#8f5d10";
+      const cssBrave =
+        getComputedStyle(document.documentElement)
+          .getPropertyValue("--cyan-soft")
+          .trim() || "#2039a6";
+
+      drawPanel(svgNaive, naive.bias, naive.conf, naive.acc, cssNaive);
+      drawPanel(svgBrave, brave.bias, brave.conf, brave.acc, cssBrave);
+
+      const set = (id: string, text: string) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = text;
+      };
+      set("bc-naive-conf", pct(naive.conf));
+      set("bc-naive-acc", pct(naive.acc));
+      set("bc-naive-ece", naive.ece.toFixed(2));
+      set("bc-brave-conf", pct(brave.conf));
+      set("bc-brave-acc", pct(brave.acc));
+      set("bc-brave-ece", brave.ece.toFixed(2));
+
+      demoRead.innerHTML =
+        "At <strong>" +
+        annotators +
+        " annotators/item</strong> — naive aggregation is <strong>" +
+        pct(naive.conf) +
+        "</strong> confident but only <strong>" +
+        pct(naive.acc) +
+        "</strong> correct (ECE " +
+        naive.ece.toFixed(2) +
+        "). BRAVE stays honest: <strong>" +
+        pct(brave.conf) +
+        "</strong> confident, <strong>" +
+        pct(brave.acc) +
+        "</strong> correct (ECE " +
+        brave.ece.toFixed(2) +
+        ").";
+    };
+
+    slider.addEventListener("input", render);
+    render();
+  }
+</script>

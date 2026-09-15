@@ -7,6 +7,7 @@ const required = [
   "index.html",
   "404.html",
   "privacy/index.html",
+  "projects/brave/index.html",
   "agent-context.md",
   "llms.txt",
   "sitemap-index.xml",
