@@ -161,6 +161,8 @@ function AgentInterface({
   runtimeReady,
   loadingRuntime,
   onActivate,
+  consent,
+  onConsentChange,
 }: {
   workerUrl: string;
   turnstileSiteKey: string;
@@ -168,10 +170,11 @@ function AgentInterface({
   runtimeReady: boolean;
   loadingRuntime: boolean;
   onActivate: () => void;
+  consent: boolean;
+  onConsentChange: (consent: boolean) => void;
 }) {
   const [transcript, setTranscript] = useState<TranscriptLine[]>([]);
   const [input, setInput] = useState("");
-  const [consent, setConsent] = useState(false);
   const [notice, setNotice] = useState("Ready for verified questions");
   const [starting, setStarting] = useState(false);
   const [recording, setRecording] = useState(false);
@@ -262,6 +265,15 @@ function AgentInterface({
   });
 
   const connected = conversation.status === "connected";
+  // Three visibly different looks so the button never reads as "the same
+  // one, click it again": a quiet outline while it only loads the SDK, a
+  // pulsing pending look while it's actually working, and a bold solid
+  // button once it's the real "start the session" action.
+  const connectStage = loadingRuntime || starting
+    ? "loading"
+    : runtimeReady
+      ? "primary"
+      : "secondary";
   const orbState = recording
     ? "recording"
     : conversation.isSpeaking
@@ -528,7 +540,7 @@ function AgentInterface({
               <input
                 type="checkbox"
                 checked={consent}
-                onChange={(event) => setConsent(event.target.checked)}
+                onChange={(event) => onConsentChange(event.target.checked)}
               />
               <span>
                 I understand Digital Zerun uses an AI clone of Zerun’s voice, and
@@ -537,7 +549,7 @@ function AgentInterface({
               </span>
             </label>
             <button
-              className="connect"
+              className={`connect is-${connectStage}`}
               disabled={
                 loadingRuntime || starting || (runtimeReady && !consent)
               }
@@ -548,8 +560,8 @@ function AgentInterface({
                 : starting
                   ? "Verifying…"
                   : runtimeReady
-                    ? "Start Digital Zerun"
-                    : "Activate private agent"}
+                    ? "▶ Start Digital Zerun"
+                    : "Activate private agent →"}
             </button>
           </div>
         )}
@@ -639,6 +651,14 @@ export default function DigitalZerun(props: {
 }) {
   const [sdk, setSdk] = useState<ElevenSdk | null>(null);
   const [loadingRuntime, setLoadingRuntime] = useState(false);
+  // Lifted out of AgentInterface: loading the SDK swaps AgentInterface from a
+  // bare element to a child of ConversationProvider, which changes the
+  // element type at that position in the tree. React remounts the subtree
+  // when that happens, so any state kept inside AgentInterface itself
+  // (like this checkbox) would silently reset right as "Start" becomes
+  // enabled. Keeping it here, on the component that never remounts, is what
+  // makes the checked box survive the swap.
+  const [consent, setConsent] = useState(false);
 
   const activate = async () => {
     if (sdk || loadingRuntime) return;
@@ -658,6 +678,8 @@ export default function DigitalZerun(props: {
         runtimeReady={false}
         loadingRuntime={loadingRuntime}
         onActivate={activate}
+        consent={consent}
+        onConsentChange={setConsent}
       />
     );
   }
@@ -671,6 +693,8 @@ export default function DigitalZerun(props: {
         runtimeReady
         loadingRuntime={false}
         onActivate={activate}
+        consent={consent}
+        onConsentChange={setConsent}
       />
     </ConversationProvider>
   );

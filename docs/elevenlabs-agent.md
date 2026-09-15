@@ -9,6 +9,7 @@ The repository is ready for a private ElevenLabs Agent, but account creation, pa
 3. Set Zero Retention Mode on, Audio Saving off, conversation retention to 0 days, and maximum conversation duration to 5 minutes.
 4. Disable usage-based overage. When the plan limit is reached, the site must remain in static mode.
 5. Enable Focus, Manipulation, and Content guardrails.
+6. Under Advanced, raise **Take turn after silence** (`conversation_config.turn.turn_timeout`, 1-30s) toward the 30s ceiling. Too short and the agent interrupts with an unprompted "are you still there?" while a visitor is still composing a question, by voice or by typing.
 
 ## First message and knowledge boundary
 

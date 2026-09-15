@@ -248,25 +248,60 @@
 .agent-start .connect {
   width: 100%;
   padding: 0.8rem;
-  border: 1px solid var(--cyan);
   border-radius: 9px;
-  background: var(--cyan);
-  color: #fff;
   font:
     500 0.8rem/1 "Geist Mono Variable",
     monospace;
   cursor: pointer;
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease;
 }
 .agent-start .connect:disabled {
-  opacity: 0.5;
   cursor: not-allowed;
 }
-:root[data-theme="dark"] .agent-start .connect {
+/* stage 1: loads the SDK, nothing has started yet — quiet outline */
+.agent-start .connect.is-secondary {
+  border: 1px solid var(--line-strong);
+  background: var(--panel-solid);
+  color: var(--cyan-soft);
+}
+.agent-start .connect.is-secondary:disabled {
+  opacity: 0.5;
+}
+/* stage 2: the real action, one tap from a live session — solid and bold
+   on purpose, so it reads as a different, further-along control rather
+   than "the same button again" */
+.agent-start .connect.is-primary {
+  border: 1px solid var(--cyan);
+  background: var(--cyan);
+  color: #fff;
+}
+.agent-start .connect.is-primary:disabled {
+  opacity: 0.5;
+}
+:root[data-theme="dark"] .agent-start .connect.is-primary {
   color: #0b0d11;
 }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .agent-start .connect {
+  :root:not([data-theme="light"]) .agent-start .connect.is-primary {
     color: #0b0d11;
+  }
+}
+/* transient: loading the runtime or verifying — visibly working, not just dim */
+.agent-start .connect.is-loading {
+  border: 1px solid var(--line-strong);
+  background: color-mix(in srgb, var(--cyan) 10%, var(--panel-solid));
+  color: var(--muted);
+  animation: connect-pending 1.1s ease-in-out infinite;
+}
+.agent-start .connect.is-loading:disabled {
+  opacity: 1;
+}
+@keyframes connect-pending {
+  50% {
+    opacity: 0.55;
   }
 }
 .agent-or {
