@@ -1,4 +1,5 @@
 ---
+import { getEntry } from "astro:content";
 import "@fontsource-variable/geist";
 import "@fontsource-variable/geist-mono";
 import "../styles/global.css";
@@ -17,6 +18,8 @@ const {
   image = "/assets/og-zerun-lab.png",
   structuredData,
 } = Astro.props;
+const profile = await getEntry("profile", "zerun-niu");
+if (!profile) throw new Error("Profile entry is missing");
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const pageTitle = title.startsWith("Zerun") ? title : `${title} — Zerun Niu`;
 const nav = [
@@ -127,9 +130,22 @@ const nav = [
           you think could be a good fit? I’d be happy to hear from you.
         </p>
       </div>
-      <a class="footer-mail" href="mailto:zerun.niu@sydney.edu.au"
-        >zerun.niu@sydney.edu.au</a
-      >
+      <div class="footer-emails">
+        <div class="footer-email">
+          <span>University</span>
+          <a class="footer-mail" href={`mailto:${profile.data.email}`}>
+            {profile.data.email}
+          </a>
+        </div>
+        {profile.data.personalEmail && (
+          <div class="footer-email">
+            <span>Personal</span>
+            <a class="footer-mail" href={`mailto:${profile.data.personalEmail}`}>
+              {profile.data.personalEmail}
+            </a>
+          </div>
+        )}
+      </div>
       <div class="footer-links">
         <a href="https://github.com/zerunniu">GitHub</a>
         <a href="https://www.linkedin.com/in/zerun-niu-265015300">LinkedIn</a>

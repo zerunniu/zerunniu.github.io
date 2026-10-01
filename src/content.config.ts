@@ -92,6 +92,7 @@ const profile = defineCollection({
     name: z.string(),
     headline: z.string(),
     email: z.email(),
+    personalEmail: z.email().optional(),
     location: z.string(),
     summary: z.string(),
     socials: z.array(link),

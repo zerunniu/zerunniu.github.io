@@ -666,9 +666,28 @@ h3 {
   margin: 0;
 }
 
+.footer-emails {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.footer-email {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.3rem 1rem;
+}
+
+.footer-email > span {
+  min-width: 6rem;
+  font: 400 0.76rem/1.4 var(--font-mono);
+  color: var(--muted);
+}
+
 .site-footer .footer-mail {
   font: 400 clamp(0.9rem, 2.2vw, 1.1rem) / 1.4 var(--font-mono);
   color: var(--cyan-soft);
+  overflow-wrap: anywhere;
 }
 
 .footer-links {
