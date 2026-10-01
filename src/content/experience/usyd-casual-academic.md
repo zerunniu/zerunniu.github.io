@@ -4,7 +4,7 @@ organisation: The University of Sydney
 start: Feb 2026
 end: present
 location: Sydney, Australia
-summary: Tutorial delivery and student learning support for university coursework.
+summary: I lead tutorials and help students work through questions, discuss ideas, and solve problems together.
 evidence:
   - Deliver weekly tutorials, class activities, small-group discussions, and question sessions.
   - Support academic communication, teamwork, technical problem solving, and professional practice.

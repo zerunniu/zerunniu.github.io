@@ -3,7 +3,7 @@ title: Distributionally Robust Wireless Semantic Communication with Large AI Mod
 shortTitle: WaSeCom
 status: published
 period: "2025-2026"
-summary: Distributionally robust semantic transmission for large-model inference across noisy, bandwidth-limited, and shifting wireless environments.
+summary: How can we preserve the information an AI model needs when a wireless connection is noisy or bandwidth is limited? WaSeCom studies this under changing channel conditions.
 role: Contributed modelling, experiment design, robust training simulations, and evaluation under constrained channels.
 tags:
   [

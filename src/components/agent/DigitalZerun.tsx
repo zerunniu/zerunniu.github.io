@@ -479,10 +479,10 @@ function AgentInterface({
           </div>
           <h2>Meet Digital Zerun.</h2>
           <p>
-            I’m Digital Zerun, an AI representation using Zerun’s authorised
-            cloned voice. Type a question or record one — replies come back
-            spoken and written. I answer only from a screened public knowledge
-            file and cannot make commitments on Zerun’s behalf.
+            Hi, I’m Digital Zerun, an AI guide to Zerun’s research, projects,
+            and experience. You can type a question or start a voice session.
+            My voice is an authorised AI clone of Zerun’s. I use information he
+            has made public, and I can’t make commitments on his behalf.
           </p>
         </div>
       </div>
@@ -556,12 +556,12 @@ function AgentInterface({
               onClick={runtimeReady ? startSession : onActivate}
             >
               {loadingRuntime
-                ? "Loading private runtime…"
+                ? "Getting voice chat ready…"
                 : starting
                   ? "Verifying…"
                   : runtimeReady
-                    ? "▶ Start Digital Zerun"
-                    : "Activate private agent →"}
+                    ? "▶ Start voice chat"
+                    : "Enable voice chat →"}
             </button>
           </div>
         )}
@@ -580,7 +580,7 @@ function AgentInterface({
             placeholder={
               connected
                 ? "Ask about research, projects, or experience…"
-                : "Ask a quick question from the public knowledge file…"
+                : "Ask about Zerun’s research or experience…"
             }
           />
           <button onClick={sendText} disabled={!input.trim()}>

@@ -27,7 +27,7 @@ test("primary navigation is in-page anchors", async ({ page }, testInfo) => {
   await research.click();
   await expect(page).toHaveURL(/#research$/);
   await expect(
-    page.getByRole("heading", { name: /Reliability, under real constraints/ }),
+    page.getByRole("heading", { name: /What I’m working on/ }),
   ).toBeVisible();
 });
 
@@ -44,7 +44,7 @@ test("Digital Zerun stays in its own section", async ({ page }) => {
   await expect(
     page.getByRole("heading", { name: /Meet Digital Zerun/ }),
   ).toBeVisible();
-  await expect(page.getByText(/AI representation/i).first()).toBeVisible();
+  await expect(page.getByText(/an authorised AI clone of Zerun’s/i)).toBeVisible();
 });
 
 test("skills orb renders a canvas without blocking content", async ({
@@ -62,10 +62,10 @@ test("reduced motion still reveals every section", async ({ page }) => {
     page.getByRole("heading", { level: 1, name: "Zerun Niu" }),
   ).toBeVisible();
   await expect(
-    page.getByRole("heading", { name: /Systems in production/ }),
+    page.getByRole("heading", { name: /Things I’ve built/ }),
   ).toBeVisible();
   await expect(
-    page.getByRole("heading", { name: /Research practice/ }),
+    page.getByRole("heading", { name: /My path through research and teaching/ }),
   ).toBeVisible();
 });
 

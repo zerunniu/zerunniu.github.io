@@ -3,7 +3,7 @@ name: Zerun Niu
 headline: AI Research Engineer working on agentic AI and reliable ML systems
 email: zerun.niu@sydney.edu.au
 location: Sydney, Australia
-summary: MPhil researcher at the University of Sydney building reliable, efficient AI systems across federated learning, semantic communication, and trustworthy machine learning.
+summary: Hi, I’m Zerun. I’m an MPhil researcher at the University of Sydney, working on machine learning when data is limited, devices have different resources, and communication is unreliable. My work spans algorithm design, implementation, and experiments.
 socials:
   - label: GitHub
     url: https://github.com/zerunniu

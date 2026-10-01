@@ -3,7 +3,7 @@ title: "BRAVE: Block-wise Structural Regularization via Controlled Evidence Feed
 shortTitle: BRAVE
 status: under-review
 period: "2026"
-summary: Reliable label aggregation under sparse crowdsourcing by separating block-local and global posterior structure and controlling recursive evidence feedback.
+summary: With only a few annotations, a model can become more confident without gaining new evidence. BRAVE controls how earlier estimates feed into later updates to reduce this effect.
 role: Zerun Niu — first author; led algorithm design, literature review, experimental design, code implementation, and experimental deployment.
 tags:
   [Reliable ML, Crowdsourcing, Calibration, Bayesian inference, Sparse evidence]

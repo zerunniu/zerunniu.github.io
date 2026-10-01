@@ -23,7 +23,7 @@ describe("Digital Zerun public facts", () => {
     "code implementation",
     "experimental deployment",
     "illusory evidence accumulation",
-    "block-local",
+    "posterior used inside each evidence block",
     "global posterior",
     "controlled evidence feedback",
     "14 crowdsourcing benchmarks",

@@ -1,8 +1,8 @@
 ---
 title: Federated Deep Equilibrium Learning over Resource-Constrained Edge Networks
 year: 2025
-venue: IEEE Internet of Things Journal submission
-status: submitted
+venue: IEEE Internet of Things Journal
+status: under-review
 authors: [L. T. Le, Zerun Niu, T. D. Nguyen, et al.]
 abstract: Federated deep equilibrium learning across heterogeneous, resource-constrained edge clients.
 project: fedeq

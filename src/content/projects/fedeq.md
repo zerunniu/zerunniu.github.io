@@ -1,9 +1,9 @@
 ---
 title: Federated Deep Equilibrium Learning over Resource-Constrained Edge Networks
 shortTitle: FeDEQ
-status: submitted
+status: under-review
 period: "2025-present"
-summary: Federated deep equilibrium models for heterogeneous clients where memory, energy, data, and communication capacity vary across the network.
+summary: FeDEQ explores how devices can train a model together when they have different data, memory, energy, and communication limits, using deep equilibrium models.
 role: Implemented FeDEQ components, explored communication-efficient aggregation, and evaluated non-IID NLP and vision settings.
 tags:
   [
