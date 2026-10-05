@@ -18,7 +18,7 @@ export async function GET() {
     "## Projects",
     ...projects.map(
       (project) =>
-        `- ${project.data.shortTitle}: ${project.data.summary}`,
+        `- ${project.data.shortTitle} (${project.data.status.replace("-", " ")}): ${project.data.summary}`,
     ),
     "",
     "Under-review work must remain labelled under review.",

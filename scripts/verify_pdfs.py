@@ -1,4 +1,5 @@
 from pathlib import Path
+import re
 
 import pypdfium2 as pdfium
 from PIL import Image, ImageDraw
@@ -17,7 +18,7 @@ REQUIRED = (
     "experimental design",
     "implementation",
     "deployment",
-    "under review",
+    "accepted",
 )
 
 
@@ -31,6 +32,10 @@ def render_and_check(path: Path, expected_pages: int) -> list[Image.Image]:
     missing = [phrase for phrase in REQUIRED if phrase not in lower]
     if missing:
         raise ValueError(f"{path.name}: missing required phrases: {', '.join(missing)}")
+    if not re.search(r"brave:[\s\S]{0,400}\baccepted\b", lower):
+        raise ValueError(f"{path.name}: BRAVE must be labelled accepted")
+    if "under review at tmlr" in lower:
+        raise ValueError(f"{path.name}: contains outdated BRAVE status")
     if "�" in text:
         raise ValueError(f"{path.name}: contains text-extraction replacement characters")
 

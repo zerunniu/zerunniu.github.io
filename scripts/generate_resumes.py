@@ -101,6 +101,8 @@ def document(path: Path):
 
 def build_industry(data, path):
     profile = data["profile"]
+    brave_paper = next(paper for paper in data["publications"] if paper["id"] == "brave")
+    brave_status = clean(brave_paper["status"]).replace("-", " ").capitalize()
     projects = sorted([project for project in data["projects"] if project.get("featured")], key=lambda value: value.get("order", 99))
     experience = sorted(data["experience"], key=lambda value: value.get("order", 99))
     research_roles = [entry for entry in experience if entry["kind"] in ("research", "teaching")]
@@ -118,7 +120,7 @@ def build_industry(data, path):
     story += [section("Research engineering casework")]
     for project in projects[3:]:
         story += project_item(project)
-    story += item("BRAVE - first-author evidence", "Under review at TMLR", "Designed controlled evidence feedback for sparse crowdsourcing and led the complete research pipeline.", ["14 benchmarks; lowest NLL on 5/14; best or tied-best ECE on 9/14.", "Accuracy within 0.03 of the strongest external baseline on 11/14.", "Completed downstream reward-model calibration transfer experiments."])
+    story += item("BRAVE - first-author evidence", f'{brave_status} at TMLR ({brave_paper["year"]})', "Designed controlled evidence feedback for sparse crowdsourcing and led the complete research pipeline.", ["14 benchmarks; lowest NLL on 5/14; best or tied-best ECE on 9/14.", "Accuracy within 0.03 of the strongest external baseline on 11/14.", "Completed downstream reward-model calibration transfer experiments."])
     story += [section("Technical practice")]
     skill_rows = [[Paragraph(group["category"], S["title"]), Paragraph(" · ".join(clean(value) for value in group["skills"]), S["small"])] for group in profile["skillGroups"]]
     skill_table = Table(skill_rows, colWidths=[36 * mm, 134 * mm])

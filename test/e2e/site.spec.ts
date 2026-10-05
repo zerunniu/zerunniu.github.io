@@ -15,6 +15,11 @@ test("home leads with the name, title, and first-author research", async ({
   await expect(
     page.getByRole("link", { name: /BRAVE:/ }).first(),
   ).toHaveAttribute("href", "/projects/brave");
+  await expect(page.locator("#p-brave .tag")).toHaveText("Accepted");
+  await expect(page.locator("#p-brave .venue")).toContainText(
+    "Transactions on Machine Learning Research · accepted (2026)",
+  );
+  await expect(page.locator("#p-fedeq .tag")).toHaveText("Under review");
 });
 
 test("primary navigation is in-page anchors", async ({ page }, testInfo) => {
@@ -44,7 +49,19 @@ test("Digital Zerun stays in its own section", async ({ page }) => {
   await expect(
     page.getByRole("heading", { name: /Meet Digital Zerun/ }),
   ).toBeVisible();
-  await expect(page.getByText(/an authorised AI clone of Zerun’s/i)).toBeVisible();
+  await expect(
+    page.getByText(/an authorised AI clone of Zerun’s/i),
+  ).toBeVisible();
+  await expect(
+    page.locator('astro-island[component-url*="DigitalZerun"][ssr]'),
+  ).toHaveCount(0);
+  await page
+    .getByPlaceholder(/Ask about Zerun’s research/)
+    .fill("Is BRAVE accepted?");
+  await page.getByRole("button", { name: "Send", exact: true }).click();
+  await expect(
+    page.getByText(/The paper is accepted at TMLR \(2026\)/),
+  ).toBeVisible();
 });
 
 test("skills orb renders a canvas without blocking content", async ({
@@ -65,7 +82,9 @@ test("reduced motion still reveals every section", async ({ page }) => {
     page.getByRole("heading", { name: /Things I’ve built/ }),
   ).toBeVisible();
   await expect(
-    page.getByRole("heading", { name: /My path through research and teaching/ }),
+    page.getByRole("heading", {
+      name: /My path through research and teaching/,
+    }),
   ).toBeVisible();
 });
 
@@ -77,7 +96,8 @@ test("BRAVE deep-dive page carries the write-up and the calibration demo", async
     page.getByRole("heading", { level: 1, name: /BRAVE:/ }),
   ).toBeVisible();
   await expect(page.getByText(/illusory evidence accumulation/i)).toBeVisible();
-  await expect(page.getByText(/under review at TMLR/i)).toBeVisible();
+  await expect(page.getByText(/accepted at TMLR \(2026\)/i)).toBeVisible();
+  await expect(page.locator(".meta-row .tag")).toHaveText("Accepted");
 
   const readout = page.locator("#bc-sparsity-readout");
   const before = await readout.textContent();

@@ -15,11 +15,15 @@ const featured = projects.filter((project) => project.data.featured);
 const publications = (await getCollection("publications")).filter(
   (paper) => paper.data.selected,
 );
-const pubByProject: Record<string, (typeof publications)[number]["data"]> =
-  {};
+const pubByProject: Record<string, (typeof publications)[number]["data"]> = {};
 for (const paper of publications) {
   if (paper.data.project) pubByProject[paper.data.project.id] = paper.data;
 }
+const braveProject = projects.find((project) => project.id === "brave");
+const bravePublication = pubByProject.brave;
+if (!braveProject || !bravePublication)
+  throw new Error("BRAVE project and publication entries are required");
+const braveAnswer = `I am Digital Zerun, an AI representation. ${braveProject.data.role} The paper is ${bravePublication.status.replace("-", " ")} at TMLR (${bravePublication.year}).`;
 
 const experiences = (await getCollection("experience")).sort(
   (a, b) => a.data.order - b.data.order,
@@ -27,6 +31,7 @@ const experiences = (await getCollection("experience")).sort(
 
 const statusLabel: Record<string, string> = {
   published: "Published",
+  accepted: "Accepted",
   "under-review": "Under review",
   submitted: "Submitted",
   active: "Active",
@@ -34,6 +39,7 @@ const statusLabel: Record<string, string> = {
 };
 const statusClass: Record<string, string> = {
   published: "is-live",
+  accepted: "is-live",
   "under-review": "is-review",
   active: "is-live",
 };
@@ -126,8 +132,8 @@ const personJsonLd = {
       </div>
       <p>
         My research looks at how machine learning behaves with limited labels,
-        unreliable wireless connections, and devices with different capabilities.
-        Here are some of the projects I’ve worked on.
+        unreliable wireless connections, and devices with different
+        capabilities. Here are some of the projects I’ve worked on.
       </p>
     </div>
     <div class="cards">
@@ -163,9 +169,12 @@ const personJsonLd = {
                 {project.data.role}
               </p>
               {pub && (
-                <p class={`venue ${pub.status === "under-review" ? "is-review" : ""}`}>
+                <p
+                  class={`venue ${pub.status === "under-review" ? "is-review" : ""}`}
+                >
                   {pub.venue}
                   {pub.status === "under-review" && " · under review"}
+                  {pub.status === "accepted" && ` · accepted (${pub.year})`}
                   {pub.doi && (
                     <>
                       {" · "}
@@ -243,8 +252,8 @@ const personJsonLd = {
         <span class="kind">Group infrastructure</span>
         <h3>DUAL Group website</h3>
         <p>
-          Designed, built, and maintained end to end for the DUAL Group's
-          public research presence at the University of Sydney.
+          Designed, built, and maintained end to end for the DUAL Group's public
+          research presence at the University of Sydney.
         </p>
         <a href="https://dual-grp.github.io/" rel="noopener" target="_blank"
           >Live site ↗</a
@@ -292,14 +301,11 @@ const personJsonLd = {
     <span class="eyebrow reveal">Digital Zerun</span>
     <div class="reveal">
       <DigitalZerun
-        workerUrl={
-          import.meta.env.PUBLIC_VOICE_WORKER_URL ||
-          "https://zerun-digital-agent.zniu9834.workers.dev"
-        }
-        turnstileSiteKey={
-          import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ||
-          "0x4AAAAAAEjYuq_yJE2BdwkX"
-        }
+        braveAnswer={braveAnswer}
+        workerUrl={import.meta.env.PUBLIC_VOICE_WORKER_URL ||
+          "https://zerun-digital-agent.zniu9834.workers.dev"}
+        turnstileSiteKey={import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ||
+          "0x4AAAAAAEjYuq_yJE2BdwkX"}
         client:visible
       />
     </div>

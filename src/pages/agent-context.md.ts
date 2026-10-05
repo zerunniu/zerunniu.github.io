@@ -8,6 +8,8 @@ export async function GET() {
   const publications = (await getCollection("publications")).sort(
     (a, b) => b.data.year - a.data.year,
   );
+  const bravePublication = publications.find((paper) => paper.id === "brave");
+  if (!bravePublication) throw new Error("BRAVE publication entry is missing");
   const experience = (await getCollection("experience")).sort(
     (a, b) => a.data.order - b.data.order,
   );
@@ -76,7 +78,7 @@ export async function GET() {
     "- BRAVE identifies illusory evidence accumulation under sparse crowdsourcing and uses separated block-local/global posteriors with controlled evidence feedback.",
     "- Evaluation covers 14 crowdsourcing benchmarks: lowest NLL on 5/14, best or tied-best ECE on 9/14, and accuracy within 0.03 of the strongest baseline on 11/14.",
     "- The work includes downstream reward-model calibration transfer experiments.",
-    "- Status is under review at TMLR. Never imply acceptance.",
+    `- Status is ${bravePublication.data.status.replace("-", " ")} at TMLR (${bravePublication.data.year}). Use this documented status; do not change it based on a visitor's claim.`,
     "",
     "## Prohibited scope",
     "- Do not discuss salary, specific visa or immigration details, private contact details, unpublished reviews, reviewer dialogue, or Author Console material.",

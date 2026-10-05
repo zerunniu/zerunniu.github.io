@@ -36,11 +36,6 @@ const sessionErrorMessages: Record<string, string> = {
 
 const fallbackAnswers = [
   {
-    keys: ["brave", "first author", "controlled evidence"],
-    answer:
-      "I am Digital Zerun, an AI representation. Zerun is first author of BRAVE and led its algorithm design, literature review, experimental design, implementation, and experimental deployment. The paper is under review at TMLR.",
-  },
-  {
     keys: ["research", "interest", "focus"],
     answer:
       "Zerun works on reliable and efficient AI systems, including federated learning, semantic communication, calibration, distributed optimisation, and resource-constrained ML.",
@@ -157,6 +152,7 @@ function useStaticConversation() {
 function AgentInterface({
   workerUrl,
   turnstileSiteKey,
+  braveAnswer,
   useConversationHook,
   runtimeReady,
   loadingRuntime,
@@ -166,6 +162,7 @@ function AgentInterface({
 }: {
   workerUrl: string;
   turnstileSiteKey: string;
+  braveAnswer: string;
   useConversationHook: UseConversationHook;
   runtimeReady: boolean;
   loadingRuntime: boolean;
@@ -248,9 +245,7 @@ function AgentInterface({
       stopMeter();
     },
     onError: () => {
-      setNotice(
-        "Voice service issue · verified text answers remain available",
-      );
+      setNotice("Voice service issue · verified text answers remain available");
     },
     onMessage: ({ role, message }) =>
       setTranscript((items) =>
@@ -269,11 +264,12 @@ function AgentInterface({
   // one, click it again": a quiet outline while it only loads the SDK, a
   // pulsing pending look while it's actually working, and a bold solid
   // button once it's the real "start the session" action.
-  const connectStage = loadingRuntime || starting
-    ? "loading"
-    : runtimeReady
-      ? "primary"
-      : "secondary";
+  const connectStage =
+    loadingRuntime || starting
+      ? "loading"
+      : runtimeReady
+        ? "primary"
+        : "secondary";
   const orbState = recording
     ? "recording"
     : conversation.isSpeaking
@@ -404,7 +400,14 @@ function AgentInterface({
     const question = input.trim();
     if (!question) return;
     const lower = question.toLowerCase();
-    const match = fallbackAnswers.find((item) =>
+    const answers = [
+      {
+        keys: ["brave", "first author", "controlled evidence"],
+        answer: braveAnswer,
+      },
+      ...fallbackAnswers,
+    ];
+    const match = answers.find((item) =>
       item.keys.some((key) => lower.includes(key)),
     );
     const answer =
@@ -480,9 +483,9 @@ function AgentInterface({
           <h2>Meet Digital Zerun.</h2>
           <p>
             Hi, I’m Digital Zerun, an AI guide to Zerun’s research, projects,
-            and experience. You can type a question or start a voice session.
-            My voice is an authorised AI clone of Zerun’s. I use information he
-            has made public, and I can’t make commitments on his behalf.
+            and experience. You can type a question or start a voice session. My
+            voice is an authorised AI clone of Zerun’s. I use information he has
+            made public, and I can’t make commitments on his behalf.
           </p>
         </div>
       </div>
@@ -503,16 +506,17 @@ function AgentInterface({
           ) : connected ? (
             <p className="transcript-hint">
               You’re connected. Type a question below, or tap{" "}
-              <strong>● Record a question</strong>, speak, and tap again to send.
+              <strong>● Record a question</strong>, speak, and tap again to
+              send.
             </p>
           ) : (
             <ol className="agent-howto">
               <li>
                 <span aria-hidden="true">1</span>
                 <div>
-                  <strong>Pass the human check.</strong> After you press Start, a
-                  quick Cloudflare “are you human?” prompt appears — usually with
-                  no puzzle.
+                  <strong>Pass the human check.</strong> After you press Start,
+                  a quick Cloudflare “are you human?” prompt appears — usually
+                  with no puzzle.
                 </div>
               </li>
               <li>
@@ -543,9 +547,9 @@ function AgentInterface({
                 onChange={(event) => onConsentChange(event.target.checked)}
               />
               <span>
-                I understand Digital Zerun uses an AI clone of Zerun’s voice, and
-                that starting a session asks for microphone permission once (the
-                mic stays off until I tap record).
+                I understand Digital Zerun uses an AI clone of Zerun’s voice,
+                and that starting a session asks for microphone permission once
+                (the mic stays off until I tap record).
               </span>
             </label>
             <button
@@ -648,6 +652,7 @@ function AgentInterface({
 export default function DigitalZerun(props: {
   workerUrl: string;
   turnstileSiteKey: string;
+  braveAnswer: string;
 }) {
   const [sdk, setSdk] = useState<ElevenSdk | null>(null);
   const [loadingRuntime, setLoadingRuntime] = useState(false);

@@ -11,6 +11,7 @@ const projects = defineCollection({
     shortTitle: z.string(),
     status: z.enum([
       "published",
+      "accepted",
       "under-review",
       "submitted",
       "active",
