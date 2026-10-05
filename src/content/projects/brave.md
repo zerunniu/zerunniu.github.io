@@ -5,6 +5,7 @@ status: accepted
 period: "2026"
 summary: With only a few annotations, a model can become more confident without gaining new evidence. BRAVE controls how earlier estimates feed into later updates to reduce this effect.
 role: Zerun Niu — first author; led algorithm design, literature review, experimental design, code implementation, and experimental deployment.
+cardHighlight: Reliable label aggregation
 tags:
   [Reliable ML, Crowdsourcing, Calibration, Bayesian inference, Sparse evidence]
 metrics:

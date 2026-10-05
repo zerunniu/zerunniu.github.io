@@ -20,6 +20,7 @@ const projects = defineCollection({
     period: z.string(),
     summary: z.string(),
     role: z.string(),
+    cardHighlight: z.string().optional(),
     tags: z.array(z.string()),
     metrics: z
       .array(z.object({ value: z.string(), label: z.string() }))

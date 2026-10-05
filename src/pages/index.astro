@@ -140,6 +140,12 @@ const personJsonLd = {
       {
         featured.map((project, index) => {
           const pub = pubByProject[project.id];
+          const primaryMetric = project.data.metrics[0];
+          const cardHighlight =
+            project.data.cardHighlight ??
+            (primaryMetric
+              ? `${primaryMetric.value} ${primaryMetric.label}`
+              : undefined);
           return (
             <article
               class="card reveal"
@@ -190,12 +196,7 @@ const personJsonLd = {
                 </p>
               )}
               <div class="card-foot" id={evidenceId[project.id]}>
-                {project.data.metrics[0] && (
-                  <span class="metric">
-                    {project.data.metrics[0].value}{" "}
-                    {project.data.metrics[0].label}
-                  </span>
-                )}
+                {cardHighlight && <span class="metric">{cardHighlight}</span>}
                 {project.data.links.map((link) => (
                   <a href={link.url} rel="noopener" target="_blank">
                     {link.label} ↗
