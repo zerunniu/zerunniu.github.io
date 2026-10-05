@@ -23,7 +23,7 @@ featured: true
 workstation: evidence
 accent: orange
 agentSummary: I designed BRAVE's controlled evidence feedback algorithm and led the literature review, experimental design, implementation, and experimental pipeline. The paper was accepted at TMLR in 2026.
-order: 3
+order: 1
 ---
 
 ## The reliability failure

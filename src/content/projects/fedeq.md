@@ -19,7 +19,7 @@ featured: true
 workstation: equilibrium
 accent: indigo
 agentSummary: I implemented FeDEQ components and evaluated communication-efficient federated equilibrium learning across heterogeneous edge clients.
-order: 2
+order: 3
 ---
 
 ## A model that solves for equilibrium

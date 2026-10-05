@@ -24,7 +24,7 @@ featured: true
 workstation: channel
 accent: cyan
 agentSummary: I contributed modelling and experiments for distributionally robust semantic communication with large AI models under dynamic wireless conditions.
-order: 1
+order: 2
 ---
 
 ## Meaning over bits
