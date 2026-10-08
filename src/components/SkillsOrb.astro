@@ -98,6 +98,8 @@
     const css = getComputedStyle(document.documentElement);
     let W = 0;
     let H = 0;
+    let raf = 0;
+    let inView = false;
     const DPR = Math.min(window.devicePixelRatio || 1, 2);
 
     const resize = () => {
@@ -109,7 +111,10 @@
       ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
     };
     resize();
-    window.addEventListener("resize", resize);
+    new ResizeObserver(() => {
+      resize();
+      if (reduced && W > 0 && H > 0) draw(0);
+    }).observe(stage);
 
     // inner ring = the headline focus; outer ring = the working toolkit
     const SKILLS: Skill[] = [
@@ -301,10 +306,21 @@
 
       for (const n of nodes) if (n.depth >= 0.46) label(n);
 
-      if (!reduced) requestAnimationFrame(draw);
+      if (!reduced && inView && !document.hidden)
+        raf = requestAnimationFrame(draw);
     };
 
-    if (reduced) draw(0);
-    else requestAnimationFrame(draw);
+    const start = () => {
+      cancelAnimationFrame(raf);
+      if (!inView || document.hidden || W <= 0 || H <= 0) return;
+      if (reduced) draw(0);
+      else raf = requestAnimationFrame(draw);
+    };
+    new IntersectionObserver(([entry]) => {
+      inView = entry.isIntersecting;
+      resize();
+      start();
+    }).observe(stage);
+    document.addEventListener("visibilitychange", start);
   }
 </script>

@@ -1,0 +1,355 @@
+---
+import { getEntry } from "astro:content";
+
+const [brave, fedeq, wasecom] = await Promise.all([
+  getEntry("projects", "brave"),
+  getEntry("projects", "fedeq"),
+  getEntry("projects", "wasecom"),
+]);
+if (!brave || !fedeq || !wasecom)
+  throw new Error("Research scenes require BRAVE, FeDEQ, and WaSeCom");
+---
+
+<figure class="generative-hero" id="generate" data-generative-hero>
+  <div class="generative-hero__heading" aria-hidden="true">
+    <span class="generative-hero__eyebrow">A closer look at my work</span>
+    <span class="generative-hero__spark">✳</span>
+  </div>
+  <button
+    class="generative-hero__stage"
+    type="button"
+    disabled
+    data-generate-trigger
+    aria-label="Generate a particle form"
+    aria-describedby="generative-description"
+  >
+    <canvas aria-hidden="true"></canvas>
+    <span class="generative-hero__hint" data-generate-hint aria-hidden="true">
+      <span class="generative-hero__tap"><span>↗</span> Tap to generate</span>
+      <span class="generative-hero__hint-note"
+        >algorithms, systems, and a personal signature</span
+      >
+    </span>
+    <span class="generative-hero__fallback" aria-hidden="true">ZN</span>
+  </button>
+  <figcaption>
+    <div class="generative-hero__readout">
+      <p data-generate-title role="status" aria-live="polite">
+        Research, taking shape.
+      </p>
+      <span id="generative-description" data-generate-description
+        >Tap to explore my research themes.</span
+      >
+      <span
+        class="generative-hero__cycle"
+        data-generate-cycle
+        hidden
+        aria-hidden="true"></span>
+      <div
+        class="generative-hero__context"
+        data-generate-context="reasoning"
+        hidden
+      >
+        <span class="sr-only"
+          >Illustrative research theme: combine noisy annotations into a label
+          estimate and represent uncertainty. Related project: {
+            brave.data.shortTitle
+          }.</span
+        >
+        <a href="/projects/brave">Explore {brave.data.shortTitle} ↗</a>
+      </div>
+      <div
+        class="generative-hero__context"
+        data-generate-context="connections"
+        hidden
+      >
+        <span class="sr-only"
+          >Conceptual illustration: {fedeq.data.summary}</span
+        >
+        <a href="/#p-fedeq">Explore {fedeq.data.shortTitle} ↗</a>
+      </div>
+      <div
+        class="generative-hero__context"
+        data-generate-context="communication"
+        hidden
+      >
+        <span class="sr-only"
+          >Conceptual transmission path: semantic encoder, channel encoder,
+          noisy wireless channel, channel decoder, and semantic decoder. WaSeCom
+          uses Wasserstein distributionally robust training to address semantic
+          input shifts and channel uncertainty.</span
+        >
+        <a href="/#p-wasecom">Explore {wasecom.data.shortTitle} ↗</a>
+      </div>
+      <div
+        class="generative-hero__context"
+        data-generate-context="signature"
+        hidden
+      >
+        <span>Zerun Niu · AI Research Engineer</span>
+      </div>
+    </div>
+    <div class="generative-hero__controls" aria-label="Choose a form">
+      <div class="generative-hero__forms">
+        <button
+          type="button"
+          data-generate-form="reasoning"
+          aria-pressed="false"
+          disabled><i aria-hidden="true">∿</i> Reliable AI</button
+        >
+        <button
+          type="button"
+          data-generate-form="connections"
+          aria-pressed="false"
+          disabled><i aria-hidden="true">⋈</i> Edge AI</button
+        >
+        <button
+          type="button"
+          data-generate-form="communication"
+          aria-pressed="false"
+          disabled
+          ><i aria-hidden="true">↝</i><span>Semantic Communication</span
+          ></button
+        >
+        <button
+          type="button"
+          data-generate-form="signature"
+          aria-pressed="false"
+          disabled
+          ><i class="signature-mark" aria-hidden="true">ZN</i> Signature</button
+        >
+      </div>
+      <button
+        class="generative-hero__reset"
+        type="button"
+        data-generate-reset
+        disabled
+        aria-label="Scatter the particles">↺</button
+      >
+    </div>
+  </figcaption>
+</figure>
+
+<style>
+  .generative-hero {
+    width: 100%;
+    margin: 0;
+    scroll-margin-top: 100px;
+    color: var(--text);
+  }
+  .generative-hero__heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 0.25rem;
+    color: var(--muted);
+  }
+  .generative-hero__eyebrow {
+    font: 400 0.64rem/1.5 var(--font-mono);
+    letter-spacing: 0.025em;
+  }
+  .generative-hero__spark {
+    font-size: 1.35rem;
+    color: var(--cyan-soft);
+  }
+  .generative-hero__stage {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: clamp(285px, 30vw, 370px);
+    padding: 0;
+    border: 0;
+    border-radius: 16px;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    overflow: hidden;
+    touch-action: manipulation;
+  }
+  .generative-hero__stage:focus-visible {
+    border-radius: 16px;
+  }
+  .generative-hero__stage canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .generative-hero__hint {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 1rem;
+    pointer-events: none;
+  }
+  .generative-hero__hint[hidden] {
+    display: none;
+  }
+  .generative-hero__tap {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.8rem 1.1rem;
+    border: 1px solid color-mix(in srgb, var(--cyan) 18%, var(--line));
+    border-radius: 100px;
+    background: color-mix(in srgb, var(--panel-solid) 88%, transparent);
+    box-shadow: 0 5px 26px color-mix(in srgb, var(--cyan) 8%, transparent);
+    font: 450 0.73rem/1.3 var(--font-sans);
+    backdrop-filter: blur(12px);
+    transition:
+      transform 200ms ease,
+      box-shadow 200ms ease;
+  }
+  .generative-hero__tap > span {
+    color: var(--cyan-soft);
+    font-size: 1rem;
+  }
+  .generative-hero__stage:hover .generative-hero__tap {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px color-mix(in srgb, var(--cyan) 14%, transparent);
+  }
+  .generative-hero__hint-note {
+    font: 400 0.58rem/1.4 var(--font-mono);
+    color: var(--muted);
+  }
+  .generative-hero__fallback {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font: 500 8rem/1 var(--font-display);
+    letter-spacing: -0.05em;
+    color: var(--cyan-soft);
+  }
+  [data-initialized] .generative-hero__fallback {
+    display: none;
+  }
+  .generative-hero:not([data-initialized]) .generative-hero__hint {
+    display: none;
+  }
+  .generative-hero__readout {
+    min-height: 8.5rem;
+    text-align: center;
+    padding: 0.3rem 0.5rem 1rem;
+  }
+  .generative-hero__readout p {
+    margin: 0 0 0.5rem;
+    font: 450 clamp(1.35rem, 2.2vw, 1.75rem)/1.2 var(--font-display);
+    letter-spacing: -0.02em;
+  }
+  [data-generate-description] {
+    display: block;
+    font: 400 0.61rem/1.6 var(--font-mono);
+    color: var(--muted);
+  }
+  .generative-hero__cycle {
+    display: block;
+    margin-top: 0.45rem;
+    color: var(--cyan-soft);
+    font: 400 0.6rem/1.5 var(--font-mono);
+  }
+  .generative-hero__context {
+    margin-top: 0.7rem;
+    color: var(--muted);
+    font: 400 0.6rem/1.5 var(--font-mono);
+  }
+  .generative-hero__context a {
+    color: var(--cyan-soft);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: var(--line-strong);
+  }
+  .generative-hero__context a:hover {
+    text-decoration-color: currentColor;
+  }
+  [data-generate-context][hidden],
+  [data-generate-cycle][hidden] {
+    display: none;
+  }
+  .generative-hero__controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .generative-hero__forms {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    flex: 0 1 360px;
+    min-width: 0;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 0.25rem;
+    border: 1px solid var(--line);
+    border-radius: 22px;
+  }
+  .generative-hero__controls button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    min-height: 40px;
+    padding: 0.35rem 0.65rem;
+    border: 0;
+    border-radius: 100px;
+    background: transparent;
+    color: var(--muted);
+    font: 400 0.6rem/1.4 var(--font-sans);
+    cursor: pointer;
+    transition:
+      color 160ms ease,
+      background 160ms ease;
+  }
+  .generative-hero__controls i {
+    font-size: 1rem;
+    font-style: normal;
+    color: var(--cyan-soft);
+  }
+  .generative-hero__controls .signature-mark {
+    font-family: var(--font-display);
+    letter-spacing: -0.07em;
+  }
+  .generative-hero__controls button:hover {
+    color: var(--text);
+    background: var(--panel-solid);
+  }
+  .generative-hero__controls button[aria-pressed="true"] {
+    color: var(--cyan-soft);
+    background: color-mix(in srgb, var(--cyan) 8%, var(--panel-solid));
+  }
+  .generative-hero__controls .generative-hero__reset {
+    width: 36px;
+    flex-shrink: 0;
+    padding: 0;
+    font-size: 1rem;
+  }
+  button:disabled {
+    cursor: default;
+  }
+  .generative-hero:not([data-initialized]) .generative-hero__controls {
+    visibility: hidden;
+  }
+  @media (max-width: 880px) {
+    .generative-hero__stage {
+      height: clamp(280px, 52vw, 390px);
+    }
+  }
+  @media (max-width: 380px) {
+    .generative-hero__forms button:not([data-generate-form="signature"]) i {
+      display: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .generative-hero__controls button,
+    .generative-hero__tap {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  import "../scripts/generative-hero";
+</script>

@@ -1,11 +1,9 @@
 ---
 /**
- * Illustrative rebuild of BRAVE's core mechanism: naive aggregation lets a
- * label posterior recycle itself as evidence and grows falsely confident
- * under sparse crowdsourcing, while BRAVE's controlled feedback stays
- * calibrated. The curves are a stand-in for the mechanism's shape, tuned to
- * stay consistent with BRAVE's reported ECE range — not the paper's
- * per-item results.
+ * Illustrative calibration comparison, not an implementation of BRAVE.
+ * BRAVE separates posterior sources for worker-profile and shared-reliability
+ * updates. The curves illustrate overconfidence and calibration; they do not
+ * calculate BRAVE's algorithm or reproduce its per-item results.
  */
 ---
 
@@ -18,7 +16,7 @@
   <div class="bc-panels">
     <div class="bc-panel naive">
       <h4>Naive aggregation</h4>
-      <small>posterior recycled as its own evidence</small>
+      <small>correlated agreement treated as independent evidence</small>
       <svg id="bc-svg-naive" viewBox="0 0 200 180" aria-hidden="true"></svg>
       <div class="bc-stats">
         <div class="bc-stat">
@@ -34,7 +32,7 @@
     </div>
     <div class="bc-panel brave">
       <h4>BRAVE — controlled feedback</h4>
-      <small>block-local vs. global posterior, regulated</small>
+      <small>decoupled worker and reliability updates</small>
       <svg id="bc-svg-brave" viewBox="0 0 200 180" aria-hidden="true"></svg>
       <div class="bc-stats">
         <div class="bc-stat">
@@ -51,11 +49,11 @@
   </div>
   <p class="bc-read" id="bc-read">&nbsp;</p>
   <p class="bc-caption">
-    Dashed line = perfectly calibrated (confidence equals accuracy). Solid
-    curve = this run's calibration curve; the dot marks the average
-    operating point. This is a simplified simulation of the mechanism's
-    shape, not BRAVE's reported per-benchmark results — see the write-up
-    below for the actual evaluation.
+    Dashed line = perfectly calibrated (confidence equals accuracy). Solid curve
+    = this run's calibration curve; the dot marks the average operating point.
+    These illustrative curves show overconfidence and calibration. They do not
+    reproduce BRAVE's algorithm or reported per-benchmark results; see the
+    write-up below for the actual evaluation.
   </p>
 </div>
 

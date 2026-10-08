@@ -64,12 +64,17 @@ test("Digital Zerun stays in its own section", async ({ page }) => {
   ).toBeVisible();
 });
 
-test("skills orb renders a canvas without blocking content", async ({
+test("home shows particle controls and offers expandable focus areas", async ({
   page,
 }) => {
   await page.goto("/");
-  await expect(page.locator("#skills-orb-canvas")).toBeVisible();
-  await expect(page.getByText("Focus areas")).toBeVisible();
+  await expect(page.locator("[data-generative-hero] canvas")).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Semantic Communication", exact: true }),
+  ).toBeVisible();
+  const focus = page.getByRole("region", { name: "Focus areas", exact: true });
+  await expect(focus.locator("summary")).toBeVisible();
+  await expect(page.locator("#skills-orb-canvas")).not.toBeVisible();
 });
 
 test("reduced motion still reveals every section", async ({ page }) => {

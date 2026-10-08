@@ -9,6 +9,7 @@ interface Props {
   description?: string;
   image?: string;
   structuredData?: Record<string, unknown> | Record<string, unknown>[];
+  noindex?: boolean;
 }
 
 const {
@@ -17,6 +18,7 @@ const {
     "Zerun Niu — AI Research Engineer working on agentic AI and reliable ML: federated learning, semantic communication, calibration, and reproducible systems.",
   image = "/assets/og-zerun-lab.png",
   structuredData,
+  noindex = false,
 } = Astro.props;
 const profile = await getEntry("profile", "zerun-niu");
 if (!profile) throw new Error("Profile entry is missing");
@@ -38,6 +40,7 @@ const nav = [
     <meta name="viewport" content="width=device-width" />
     <meta name="theme-color" content="#f3f4f6" />
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
     <meta name="generator" content={Astro.generator} />
     <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />

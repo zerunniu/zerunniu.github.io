@@ -29,11 +29,11 @@ order: 1
 
 ## The reliability failure
 
-Sparse crowdsourcing creates a subtle failure mode: once an aggregated label posterior is fed back as evidence, an early mistake can reinforce itself. The model may appear increasingly confident even though no genuinely new annotation evidence has arrived. We call this **illusory evidence accumulation**.
+Sparse crowdsourcing creates a subtle failure mode: workers can share the same error pattern, so their agreement does not always provide independent evidence. Globally coupled inference can repeatedly reuse that correlated agreement, making a label posterior more confident than the annotations justify. We call this **illusory evidence accumulation**.
 
 ## What I designed
 
-BRAVE separates the posterior used inside each evidence block from the global posterior carried across blocks. A controlled feedback coefficient regulates how much global belief can influence the next local update. This preserves useful information transfer without letting recursive pseudo-evidence dominate the observed labels.
+BRAVE partitions workers into disjoint blocks and separates the posterior used inside each evidence block from the synchronized global posterior for each item. It controls evidence feedback through dual decoupled parameter updates: worker mixture weights use the global posterior, while shared reliability matrices use block-local posterior statistics. The class prior is anchored in observed annotation frequencies. This keeps sharpened cross-block consensus from being recycled into the shared reliability components.
 
 ## My contribution
 
