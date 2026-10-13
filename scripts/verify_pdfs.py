@@ -36,6 +36,8 @@ def render_and_check(path: Path, expected_pages: int) -> list[Image.Image]:
         raise ValueError(f"{path.name}: BRAVE must be labelled accepted")
     if "under review at tmlr" in lower:
         raise ValueError(f"{path.name}: contains outdated BRAVE status")
+    if not re.search(r"federated deep equilibrium learning over[\s\S]{0,400}\baccepted\b", lower):
+        raise ValueError(f"{path.name}: FeDEQ must be labelled accepted")
     if "�" in text:
         raise ValueError(f"{path.name}: contains text-extraction replacement characters")
 

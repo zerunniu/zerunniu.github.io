@@ -19,7 +19,10 @@ test("home leads with the name, title, and first-author research", async ({
   await expect(page.locator("#p-brave .venue")).toContainText(
     "Transactions on Machine Learning Research · accepted (2026)",
   );
-  await expect(page.locator("#p-fedeq .tag")).toHaveText("Under review");
+  await expect(page.locator("#p-fedeq .tag")).toHaveText("Accepted");
+  await expect(page.locator("#p-fedeq .venue")).toContainText(
+    "IEEE Internet of Things Journal · accepted (2026)",
+  );
 });
 
 test("primary navigation is in-page anchors", async ({ page }, testInfo) => {
@@ -61,6 +64,15 @@ test("Digital Zerun stays in its own section", async ({ page }) => {
   await page.getByRole("button", { name: "Send", exact: true }).click();
   await expect(
     page.getByText(/The paper is accepted at TMLR \(2026\)/),
+  ).toBeVisible();
+  await page
+    .getByPlaceholder(/Ask about Zerun’s research/)
+    .fill("Is FeDEQ accepted at IoT-J?");
+  await page.getByRole("button", { name: "Send", exact: true }).click();
+  await expect(
+    page.getByText(
+      /The paper is accepted at IEEE Internet of Things Journal \(2026\)/,
+    ),
   ).toBeVisible();
 });
 

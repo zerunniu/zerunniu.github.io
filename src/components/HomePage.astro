@@ -30,6 +30,11 @@ const bravePublication = pubByProject.brave;
 if (!braveProject || !bravePublication)
   throw new Error("BRAVE project and publication entries are required");
 const braveAnswer = `I am Digital Zerun, an AI representation. ${braveProject.data.role} The paper is ${bravePublication.status.replace("-", " ")} at TMLR (${bravePublication.year}).`;
+const fedeqProject = projects.find((project) => project.id === "fedeq");
+const fedeqPublication = pubByProject.fedeq;
+if (!fedeqProject || !fedeqPublication)
+  throw new Error("FeDEQ project and publication entries are required");
+const fedeqAnswer = `I am Digital Zerun, an AI representation. ${fedeqProject.data.summary} The paper is ${fedeqPublication.status.replace("-", " ")} at ${fedeqPublication.venue} (${fedeqPublication.year}). Zerun's contribution: ${fedeqProject.data.role}`;
 
 const experiences = (await getCollection("experience")).sort(
   (a, b) => a.data.order - b.data.order,
@@ -342,6 +347,7 @@ const personJsonLd = {
     <div class="reveal">
       <DigitalZerun
         braveAnswer={braveAnswer}
+        fedeqAnswer={fedeqAnswer}
         workerUrl={import.meta.env.PUBLIC_VOICE_WORKER_URL ||
           "https://zerun-digital-agent.zniu9834.workers.dev"}
         turnstileSiteKey={import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ||

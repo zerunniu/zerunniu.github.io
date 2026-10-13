@@ -76,5 +76,6 @@ jobs:
           curl --fail --retry 5 --retry-delay 5 https://zerunniu.github.io/privacy/ | grep -qi "cloned voice"
           curl --fail --retry 5 --retry-delay 5 https://zerunniu.github.io/agent-context.md | grep -q "first author"
           curl --fail --retry 5 --retry-delay 5 https://zerunniu.github.io/agent-context.md | grep -qi "accepted at TMLR (2026)"
+          curl --fail --retry 5 --retry-delay 5 https://zerunniu.github.io/agent-context.md | grep -q "IEEE Internet of Things Journal, 2026. Status: accepted."
           curl --fail --head https://zerunniu.github.io/assets/Zerun_Niu_Research_Engineer_Resume.pdf
           curl --fail --head https://zerunniu.github.io/assets/Zerun_Niu_Academic_CV.pdf

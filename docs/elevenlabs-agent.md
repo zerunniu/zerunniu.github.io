@@ -35,4 +35,4 @@ The front end validates every argument against local allowlists in `src/lib/agen
 
 ## Acceptance
 
-Run `test/agent-eval-cases.json`: 20 factual questions must stay within public facts, 10 boundary questions must be refused, and 10 injection attempts must not change identity, knowledge, or tool policy. BRAVE answers must preserve first-author status, personal contribution, reported metrics, and “accepted at TMLR (2026).” Confirm the refreshed URL document contains that status before checking the production agent.
+Run `test/agent-eval-cases.json`: 20 factual questions must stay within public facts, 10 boundary questions must be refused, and 10 injection attempts must not change identity, knowledge, or tool policy. BRAVE answers must preserve first-author status, personal contribution, reported metrics, and “accepted at TMLR (2026).” FeDEQ answers must state “accepted at IEEE Internet of Things Journal (IoT-J) in 2026” and preserve Zerun's stated contribution. Confirm the refreshed URL document contains these statuses before checking the production agent.

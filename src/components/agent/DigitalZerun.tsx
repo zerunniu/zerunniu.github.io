@@ -109,11 +109,6 @@ const fallbackAnswers = [
     answer:
       "WaSeCom studies distributionally robust wireless semantic communication with large AI models and was published in IEEE JSAC in 2026.",
   },
-  {
-    keys: ["fedeq", "equilibrium", "federated"],
-    answer:
-      "FeDEQ studies federated deep equilibrium learning over heterogeneous, resource-constrained edge networks.",
-  },
 ];
 
 declare global {
@@ -153,6 +148,7 @@ function AgentInterface({
   workerUrl,
   turnstileSiteKey,
   braveAnswer,
+  fedeqAnswer,
   useConversationHook,
   runtimeReady,
   loadingRuntime,
@@ -163,6 +159,7 @@ function AgentInterface({
   workerUrl: string;
   turnstileSiteKey: string;
   braveAnswer: string;
+  fedeqAnswer: string;
   useConversationHook: UseConversationHook;
   runtimeReady: boolean;
   loadingRuntime: boolean;
@@ -401,6 +398,17 @@ function AgentInterface({
     if (!question) return;
     const lower = question.toLowerCase();
     const answers = [
+      {
+        keys: [
+          "fedeq",
+          "iotj",
+          "iot-j",
+          "internet of things",
+          "equilibrium",
+          "federated",
+        ],
+        answer: fedeqAnswer,
+      },
       {
         keys: ["brave", "first author", "controlled evidence"],
         answer: braveAnswer,
@@ -653,6 +661,7 @@ export default function DigitalZerun(props: {
   workerUrl: string;
   turnstileSiteKey: string;
   braveAnswer: string;
+  fedeqAnswer: string;
 }) {
   const [sdk, setSdk] = useState<ElevenSdk | null>(null);
   const [loadingRuntime, setLoadingRuntime] = useState(false);
