@@ -15,9 +15,9 @@ test("home leads with the name, title, and first-author research", async ({
   await expect(
     page.getByRole("link", { name: /BRAVE:/ }).first(),
   ).toHaveAttribute("href", "/projects/brave");
-  await expect(page.locator("#p-brave .tag")).toHaveText("Accepted");
+  await expect(page.locator("#p-brave .tag")).toHaveText("Published");
   await expect(page.locator("#p-brave .venue")).toContainText(
-    "Transactions on Machine Learning Research · accepted (2026)",
+    "Transactions on Machine Learning Research · published (2026)",
   );
   await expect(page.locator("#p-fedeq .tag")).toHaveText("Accepted");
   await expect(page.locator("#p-fedeq .venue")).toContainText(
@@ -60,10 +60,10 @@ test("Digital Zerun stays in its own section", async ({ page }) => {
   ).toHaveCount(0);
   await page
     .getByPlaceholder(/Ask about Zerun’s research/)
-    .fill("Is BRAVE accepted?");
+    .fill("Where was BRAVE published?");
   await page.getByRole("button", { name: "Send", exact: true }).click();
   await expect(
-    page.getByText(/The paper is accepted at TMLR \(2026\)/),
+    page.getByText(/The paper is published in TMLR \(2026\)/),
   ).toBeVisible();
   await page
     .getByPlaceholder(/Ask about Zerun’s research/)
@@ -113,8 +113,8 @@ test("BRAVE deep-dive page carries the write-up and the calibration demo", async
     page.getByRole("heading", { level: 1, name: /BRAVE:/ }),
   ).toBeVisible();
   await expect(page.getByText(/illusory evidence accumulation/i)).toBeVisible();
-  await expect(page.getByText(/accepted at TMLR \(2026\)/i)).toBeVisible();
-  await expect(page.locator(".meta-row .tag")).toHaveText("Accepted");
+  await expect(page.getByText(/published in TMLR \(2026\)/i)).toBeVisible();
+  await expect(page.locator(".meta-row .tag")).toHaveText("Published");
 
   const readout = page.locator("#bc-sparsity-readout");
   const before = await readout.textContent();

@@ -29,7 +29,7 @@ const braveProject = projects.find((project) => project.id === "brave");
 const bravePublication = pubByProject.brave;
 if (!braveProject || !bravePublication)
   throw new Error("BRAVE project and publication entries are required");
-const braveAnswer = `I am Digital Zerun, an AI representation. ${braveProject.data.role} The paper is ${bravePublication.status.replace("-", " ")} at TMLR (${bravePublication.year}).`;
+const braveAnswer = `I am Digital Zerun, an AI representation. ${braveProject.data.role} The paper is ${bravePublication.status.replace("-", " ")} ${bravePublication.status === "published" ? "in" : "at"} TMLR (${bravePublication.year}).`;
 const fedeqProject = projects.find((project) => project.id === "fedeq");
 const fedeqPublication = pubByProject.fedeq;
 if (!fedeqProject || !fedeqPublication)
@@ -202,6 +202,7 @@ const personJsonLd = {
                   {pub.venue}
                   {pub.status === "under-review" && " · under review"}
                   {pub.status === "accepted" && ` · accepted (${pub.year})`}
+                  {pub.status === "published" && ` · published (${pub.year})`}
                   {pub.doi && (
                     <>
                       {" · "}

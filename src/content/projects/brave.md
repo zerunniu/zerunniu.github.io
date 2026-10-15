@@ -1,7 +1,7 @@
 ---
 title: "BRAVE: Block-wise Structural Regularization via Controlled Evidence Feedback for Reliable Label Aggregation under Sparse Crowdsourcing"
 shortTitle: BRAVE
-status: accepted
+status: published
 period: "2026"
 summary: With only a few annotations, a model can become more confident without gaining new evidence. BRAVE controls how earlier estimates feed into later updates to reduce this effect.
 role: Zerun Niu — first author; led algorithm design, literature review, experimental design, code implementation, and experimental deployment.
@@ -20,10 +20,12 @@ metrics:
 links:
   - label: OpenReview
     url: https://openreview.net/forum?id=iWFI5hO1dZ
+  - label: Code
+    url: https://github.com/zerunniu/BRAVE
 featured: true
 workstation: evidence
 accent: orange
-agentSummary: I designed BRAVE's controlled evidence feedback algorithm and led the literature review, experimental design, implementation, and experimental pipeline. The paper was accepted at TMLR in 2026.
+agentSummary: I designed BRAVE's controlled evidence feedback algorithm and led the literature review, experimental design, implementation, and experimental pipeline. The paper was published in TMLR in 2026.
 order: 1
 ---
 
@@ -43,4 +45,4 @@ As first author, I led the algorithm design, literature review, experimental des
 
 Across 14 crowdsourcing benchmarks, BRAVE achieved the lowest negative log-likelihood on 5 datasets and the best or tied-best expected calibration error on 9. Its accuracy was within 0.03 of the strongest external baseline on 11 datasets. We also completed a downstream reward-model calibration transfer experiment.
 
-> Status: accepted at TMLR (2026). Zerun Niu is first author. See the public OpenReview record linked above.
+> Status: published in TMLR (2026). Zerun Niu is first author. See the public OpenReview record and official code linked above.

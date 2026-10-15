@@ -32,7 +32,7 @@ describe("Digital Zerun public facts", () => {
     "11/14",
     "0.03",
     "reward-model calibration transfer",
-    "accepted at TMLR",
+    "published in TMLR",
     "TMLR",
     "OpenReview",
     "Zerun Niu",

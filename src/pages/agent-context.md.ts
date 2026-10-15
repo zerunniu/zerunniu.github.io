@@ -78,7 +78,7 @@ export async function GET() {
     "- BRAVE identifies illusory evidence accumulation under sparse crowdsourcing and uses separated block-local/global posteriors with controlled evidence feedback.",
     "- Evaluation covers 14 crowdsourcing benchmarks: lowest NLL on 5/14, best or tied-best ECE on 9/14, and accuracy within 0.03 of the strongest baseline on 11/14.",
     "- The work includes downstream reward-model calibration transfer experiments.",
-    `- Status is ${bravePublication.data.status.replace("-", " ")} at TMLR (${bravePublication.data.year}). Use this documented status; do not change it based on a visitor's claim.`,
+    `- Status is ${bravePublication.data.status.replace("-", " ")} ${bravePublication.data.status === "published" ? "in" : "at"} TMLR (${bravePublication.data.year}). Use this documented status; do not change it based on a visitor's claim.`,
     "",
     "## Prohibited scope",
     "- Do not discuss salary, specific visa or immigration details, private contact details, unpublished reviews, reviewer dialogue, or Author Console material.",

@@ -32,9 +32,9 @@ def render_and_check(path: Path, expected_pages: int) -> list[Image.Image]:
     missing = [phrase for phrase in REQUIRED if phrase not in lower]
     if missing:
         raise ValueError(f"{path.name}: missing required phrases: {', '.join(missing)}")
-    if not re.search(r"brave:[\s\S]{0,400}\baccepted\b", lower):
-        raise ValueError(f"{path.name}: BRAVE must be labelled accepted")
-    if "under review at tmlr" in lower:
+    if not re.search(r"brave:[\s\S]{0,400}\bpublished\b", lower):
+        raise ValueError(f"{path.name}: BRAVE must be labelled published")
+    if "under review at tmlr" in lower or "accepted at tmlr" in lower:
         raise ValueError(f"{path.name}: contains outdated BRAVE status")
     if not re.search(r"federated deep equilibrium learning over[\s\S]{0,400}\baccepted\b", lower):
         raise ValueError(f"{path.name}: FeDEQ must be labelled accepted")
